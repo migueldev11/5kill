@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fórum Anônimo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      margin: 0;
+      background: #f3f3f3;
+    }
+    .sidebar {
+      width: 250px;
+      background: #222;
+      color: #fff;
+      padding: 20px;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    .sidebar h2 {
+      margin-top: 0;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    input[type="file"] {
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .post {
+      background: white;
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .post small {
+      color: #555;
+    }
+    .search {
+      margin-bottom: 20px;
+    }
+    .category {
+      margin-top: 20px;
+    }
+    .post img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    .comments {
+      margin-top: 10px;
+      padding-left: 10px;
+      border-left: 2px solid #ccc;
+    }
+    .comment {
+      background: #f9f9f9;
+      margin: 5px 0;
+      padding: 5px 10px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Fórum</h2>
+    <div class="search">
+      <input type="text" id="searchInput" placeholder="Pesquisar posts..." />
+    </div>
+    <div class="popular">
+      <h3>Mais acessados</h3>
+      <ul id="popularList"></ul>
+    </div>
+    <div class="category">
+      <h3>Categorias</h3>
+      <ul>
+        <li><a href="#" onclick="filterCategory('Geral')">Geral</a></li>
+        <li><a href="#" onclick="filterCategory('Tecnologia')">Tecnologia</a></li>
+        <li><a href="#" onclick="filterCategory('Arte')">Arte</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="content">
+    <h1>Postar Anonimamente</h1>
+    <input type="text" id="postTitle" placeholder="Título do post" />
+    <textarea id="postContent" placeholder="Conteúdo do post"></textarea>
+    <select id="postCategory">
+      <option value="Geral">Geral</option>
+      <option value="Tecnologia">Tecnologia</option>
+      <option value="Arte">Arte</option>
+    </select>
+    <input type="file" id="postImage" accept="image/*" />
+    <button onclick="addPost()">Publicar</button>
+    <div id="posts"></div>
+  </div>
+
+  <script>
+    let anonID = localStorage.getItem('anonID');
+    if (!anonID) {
+      anonID = 'anonimo_' + (Math.floor(Math.random() * 100000));
+      localStorage.setItem('anonID', anonID);
+    }
+
+    let posts = JSON.parse(localStorage.getItem('posts')) || [];
+
+    function renderPosts(filter = '') {
+      const postsDiv = document.getElementById('posts');
+      postsDiv.innerHTML = '';
+      const filtered = posts.filter(p =>
+        p.title.toLowerCase().includes(filter.toLowerCase()) ||
+        p.content.toLowerCase().includes(filter.toLowerCase()) ||
+        p.category === filter
+      );
+      filtered.forEach((post, index) => {
+        const postEl = document.createElement('div');
+        postEl.className = 'post';
+        postEl.innerHTML = `
+          <h3>${post.title}</h3>
+          <p>${post.content}</p>
+          ${post.image ? `<img src="${post.image}" alt="Imagem do post">` : ''}
+          <small>${post.author} - ${post.category}</small>
+          <div class="comments">
+            <strong>Comentários:</strong>
+            ${(post.comments || []).map(c => `<div class='comment'><small>${c.author}:</small> ${c.text}</div>`).join('')}
+            <input type="text" placeholder="Comente aqui..." onkeydown="if(event.key==='Enter')addComment(${index}, this.value);this.value=''">
+          </div>
+        `;
+        postsDiv.appendChild(postEl);
+      });
+    }
+
+    function addPost() {
+      const title = document.getElementById('postTitle').value;
+      const content = document.getElementById('postContent').value;
+      const category = document.getElementById('postCategory').value;
+      const imageFile = document.getElementById('postImage').files[0];
+
+      if (!title || !content) return alert('Preencha todos os campos.');
+
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const post = {
+            title,
+            content,
+            category,
+            author: anonID,
+            image: e.target.result,
+            comments: [],
+            views: 0
+          };
+          posts.unshift(post);
+          localStorage.setItem('posts', JSON.stringify(posts));
+          renderPosts();
+          updatePopular();
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        const post = {
+          title,
+          content,
+          category,
+          author: anonID,
+          image: '',
+          comments: [],
+          views: 0
+        };
+        posts.unshift(post);
+        localStorage.setItem('posts', JSON.stringify(posts));
+        renderPosts();
+        updatePopular();
+      }
+    }
+
+    function addComment(postIndex, text) {
+      if (!text.trim()) return;
+      const comment = { text, author: anonID };
+      posts[postIndex].comments = posts[postIndex].comments || [];
+      posts[postIndex].comments.push(comment);
+      posts[postIndex].views += 1; // Incrementar visualizações quando comentar
+      localStorage.setItem('posts', JSON.stringify(posts));
+      renderPosts();
+    }
+
+    function filterCategory(cat) {
+      renderPosts(cat);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      renderPosts(e.target.value);
+    });
+
+    function updatePopular() {
+      const popularList = document.getElementById('popularList');
+      popularList.innerHTML = '';
+      const popular = [...posts].sort((a, b) => b.views - a.views).slice(0, 5);
+      popular.forEach(post => {
+        const li = document.createElement('li');
+        li.textContent = post.title;
+        popularList.appendChild(li);
+      });
+    }
+
+    function exportData() {
+      const data = JSON.stringify(posts, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'posts.json';
+      link.click();
+    }
+
+    renderPosts();
+    updatePopular();
+  </script>
+</body>
+</html>
+
