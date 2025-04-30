@@ -1,231 +1,323 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Fórum Anônimo</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      display: flex;
+      font-family: sans-serif;
       margin: 0;
-      background: #f3f3f3;
+      display: flex;
+      background: #f4f4f4;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #1e1e1e;
+      color: white;
+    }
+    .container {
+      display: flex;
+      width: 100%;
     }
     .sidebar {
       width: 250px;
-      background: #222;
-      color: #fff;
-      padding: 20px;
-      height: 100vh;
-      box-sizing: border-box;
+      background: #ddd;
+      padding: 10px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      transition: background 0.3s;
     }
-    .sidebar h2 {
-      margin-top: 0;
+    body.dark .sidebar {
+      background: #2c2c2c;
+    }
+    .sidebar input {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar li {
+      cursor: pointer;
+      padding: 5px;
+    }
+    .sidebar li:hover {
+      background: #bbb;
+    }
+    body.dark .sidebar li:hover {
+      background: #444;
     }
     .content {
       flex: 1;
       padding: 20px;
     }
-    input[type="text"], textarea, select {
+    #postForm {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    #postForm input, #postForm select, #postForm textarea {
+      padding: 8px;
+      font-size: 14px;
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      box-sizing: border-box;
     }
-    input[type="file"] {
-      margin: 10px 0;
-    }
-    button {
+    #postForm button {
       padding: 10px;
-      background: #007BFF;
+      background: #333;
       color: white;
       border: none;
       cursor: pointer;
     }
     .post {
       background: white;
-      margin-bottom: 10px;
       padding: 15px;
-      border-radius: 5px;
-    }
-    .post small {
-      color: #555;
-    }
-    .search {
       margin-bottom: 20px;
+      border-radius: 5px;
+      color: black;
     }
-    .category {
-      margin-top: 20px;
+    body.dark .post {
+      background: #2e2e2e;
+      color: white;
     }
-    .post img {
+    .post-img {
       max-width: 100%;
       margin-top: 10px;
     }
-    .comments {
+    .comentario-textarea {
+      width: 100%;
       margin-top: 10px;
-      padding-left: 10px;
-      border-left: 2px solid #ccc;
+      padding: 6px;
     }
-    .comment {
-      background: #f9f9f9;
-      margin: 5px 0;
-      padding: 5px 10px;
-      border-radius: 3px;
+    .views {
+      font-size: 12px;
+      color: gray;
+    }
+    .modal {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -20%);
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      display: none;
+      z-index: 999;
+    }
+    body.dark .modal {
+      background: #2e2e2e;
+      color: white;
+    }
+    .modal label {
+      display: block;
+      margin: 10px 0 5px;
     }
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Fórum</h2>
-    <div class="search">
-      <input type="text" id="searchInput" placeholder="Pesquisar posts..." />
-    </div>
-    <div class="popular">
-      <h3>Mais acessados</h3>
-      <ul id="popularList"></ul>
-    </div>
-    <div class="category">
-      <h3>Categorias</h3>
-      <ul>
-        <li><a href="#" onclick="filterCategory('Geral')">Geral</a></li>
-        <li><a href="#" onclick="filterCategory('Tecnologia')">Tecnologia</a></li>
-        <li><a href="#" onclick="filterCategory('Arte')">Arte</a></li>
+  <div class="container">
+    <aside class="sidebar">
+      <input type="text" id="search" placeholder="Pesquisar...">
+      <h3 id="temasTitulo">Temas</h3>
+      <ul id="temaList">
+        <li onclick="filtrarPorTema('Geral')">Geral</li>
+        <li onclick="filtrarPorTema('Tecnologia')">Tecnologia</li>
+        <li onclick="filtrarPorTema('Música')">Música</li>
+        <li onclick="filtrarPorTema('Jogos')">Jogos</li>
+        <li onclick="filtrarPorTema('Notícias')">Notícias</li>
+        <li onclick="filtrarPorTema('Aleatório')">Aleatório</li>
       </ul>
-    </div>
+      <h3 id="acessadosTitulo">Mais acessados</h3>
+      <ul id="maisAcessados"></ul>
+      <hr>
+      <button onclick="abrirConfiguracoes()">⚙️ Configurações</button>
+    </aside>
+
+    <main class="content">
+      <h1 id="tituloPrincipal">Fórum Anônimo</h1>
+      <form id="postForm">
+        <input type="text" id="titulo" placeholder="Título do post" required>
+        <select id="tema">
+          <option>Geral</option>
+          <option>Tecnologia</option>
+          <option>Música</option>
+          <option>Jogos</option>
+          <option>Notícias</option>
+          <option>Aleatório</option>
+        </select>
+        <textarea id="conteudo" placeholder="Escreva aqui..." required></textarea>
+        <input type="file" id="imagem">
+        <button type="submit" id="botaoPostar">Postar</button>
+      </form>
+      <div id="posts"></div>
+    </main>
   </div>
-  <div class="content">
-    <h1>Postar Anonimamente</h1>
-    <input type="text" id="postTitle" placeholder="Título do post" />
-    <textarea id="postContent" placeholder="Conteúdo do post"></textarea>
-    <select id="postCategory">
-      <option value="Geral">Geral</option>
-      <option value="Tecnologia">Tecnologia</option>
-      <option value="Arte">Arte</option>
+
+  <!-- Modal de configurações -->
+  <div class="modal" id="modalConfig">
+    <h3>Configurações</h3>
+    <label for="temaSite">Tema:</label>
+    <select id="temaSite">
+      <option value="claro">Claro</option>
+      <option value="escuro">Escuro</option>
     </select>
-    <input type="file" id="postImage" accept="image/*" />
-    <button onclick="addPost()">Publicar</button>
-    <div id="posts"></div>
+
+    <label for="idioma">Idioma:</label>
+    <select id="idioma">
+      <option value="pt">Português</option>
+      <option value="en">English</option>
+    </select>
+
+    <br><br>
+    <button onclick="fecharConfiguracoes()">Fechar</button>
   </div>
 
   <script>
-    let anonID = localStorage.getItem('anonID');
-    if (!anonID) {
-      anonID = 'anonimo_' + (Math.floor(Math.random() * 100000));
-      localStorage.setItem('anonID', anonID);
+    const body = document.body;
+
+    // Nome anônimo
+    let contadorAnonimo = localStorage.getItem("anonID") || 1;
+    if (!localStorage.getItem("anonID")) {
+      localStorage.setItem("anonID", contadorAnonimo);
+    }
+    const anonimoNome = "anônimo_" + contadorAnonimo;
+
+    let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+    function salvarPosts() {
+      localStorage.setItem("posts", JSON.stringify(posts));
+      atualizarMaisAcessados();
     }
 
-    let posts = JSON.parse(localStorage.getItem('posts')) || [];
+    document.getElementById("postForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const titulo = document.getElementById("titulo").value;
+      const conteudo = document.getElementById("conteudo").value;
+      const tema = document.getElementById("tema").value;
+      const imagemInput = document.getElementById("imagem");
+      const imagemURL = imagemInput.files[0] ? URL.createObjectURL(imagemInput.files[0]) : null;
 
-    function renderPosts(filter = '') {
-      const postsDiv = document.getElementById('posts');
-      postsDiv.innerHTML = '';
-      const filtered = posts.filter(p =>
-        p.title.toLowerCase().includes(filter.toLowerCase()) ||
-        p.content.toLowerCase().includes(filter.toLowerCase()) ||
-        p.category === filter
-      );
-      filtered.forEach((post, index) => {
-        const postEl = document.createElement('div');
-        postEl.className = 'post';
-        postEl.innerHTML = `
-          <h3>${post.title}</h3>
-          <p>${post.content}</p>
-          ${post.image ? `<img src="${post.image}" alt="Imagem do post">` : ''}
-          <small>${post.author} - ${post.category}</small>
-          <div class="comments">
-            <strong>Comentários:</strong>
-            ${(post.comments || []).map(c => `<div class='comment'><small>${c.author}:</small> ${c.text}</div>`).join('')}
-            <input type="text" placeholder="Comente aqui..." onkeydown="if(event.key==='Enter')addComment(${index}, this.value);this.value=''">
+      const novoPost = {
+        id: Date.now(),
+        titulo,
+        conteudo,
+        autor: anonimoNome,
+        tema,
+        imagem: imagemURL,
+        comentarios: [],
+        visualizacoes: 0
+      };
+      posts.unshift(novoPost);
+      salvarPosts();
+      exibirPosts(posts);
+      e.target.reset();
+    });
+
+    function exibirPosts(lista) {
+      const area = document.getElementById("posts");
+      area.innerHTML = "";
+      lista.forEach(post => {
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+          <h2>${post.titulo}</h2>
+          <p><strong>${post.autor}</strong> - <em>${post.tema}</em></p>
+          <p>${post.conteudo}</p>
+          ${post.imagem ? `<img src="${post.imagem}" class="post-img">` : ""}
+          <p class="views">Visualizações: ${post.visualizacoes}</p>
+          <textarea placeholder="Comentar..." class="comentario-textarea"></textarea>
+          <button onclick="comentar(${post.id}, this)">Comentar</button>
+          <div class="comentarios">
+            ${post.comentarios.map(c => `<p>${c}</p>`).join("")}
           </div>
         `;
-        postsDiv.appendChild(postEl);
+        post.visualizacoes++;
+        area.appendChild(div);
       });
+      salvarPosts();
     }
 
-    function addPost() {
-      const title = document.getElementById('postTitle').value;
-      const content = document.getElementById('postContent').value;
-      const category = document.getElementById('postCategory').value;
-      const imageFile = document.getElementById('postImage').files[0];
-
-      if (!title || !content) return alert('Preencha todos os campos.');
-
-      if (imageFile) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const post = {
-            title,
-            content,
-            category,
-            author: anonID,
-            image: e.target.result,
-            comments: [],
-            views: 0
-          };
-          posts.unshift(post);
-          localStorage.setItem('posts', JSON.stringify(posts));
-          renderPosts();
-          updatePopular();
-        };
-        reader.readAsDataURL(imageFile);
-      } else {
-        const post = {
-          title,
-          content,
-          category,
-          author: anonID,
-          image: '',
-          comments: [],
-          views: 0
-        };
-        posts.unshift(post);
-        localStorage.setItem('posts', JSON.stringify(posts));
-        renderPosts();
-        updatePopular();
+    function comentar(id, botao) {
+      const texto = botao.previousElementSibling.value.trim();
+      if (texto) {
+        const post = posts.find(p => p.id === id);
+        post.comentarios.push(texto);
+        salvarPosts();
+        exibirPosts(posts);
       }
     }
 
-    function addComment(postIndex, text) {
-      if (!text.trim()) return;
-      const comment = { text, author: anonID };
-      posts[postIndex].comments = posts[postIndex].comments || [];
-      posts[postIndex].comments.push(comment);
-      posts[postIndex].views += 1; // Incrementar visualizações quando comentar
-      localStorage.setItem('posts', JSON.stringify(posts));
-      renderPosts();
-    }
-
-    function filterCategory(cat) {
-      renderPosts(cat);
-    }
-
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      renderPosts(e.target.value);
-    });
-
-    function updatePopular() {
-      const popularList = document.getElementById('popularList');
-      popularList.innerHTML = '';
-      const popular = [...posts].sort((a, b) => b.views - a.views).slice(0, 5);
-      popular.forEach(post => {
-        const li = document.createElement('li');
-        li.textContent = post.title;
-        popularList.appendChild(li);
+    function atualizarMaisAcessados() {
+      const topPosts = [...posts].sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
+      const lista = document.getElementById("maisAcessados");
+      lista.innerHTML = "";
+      topPosts.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = p.titulo;
+        li.onclick = () => exibirPosts([p]);
+        lista.appendChild(li);
       });
     }
 
-    function exportData() {
-      const data = JSON.stringify(posts, null, 2);
-      const blob = new Blob([data], { type: 'application/json' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'posts.json';
-      link.click();
+    function filtrarPorTema(tema) {
+      const filtrados = posts.filter(p => p.tema === tema);
+      exibirPosts(filtrados);
     }
 
-    renderPosts();
-    updatePopular();
+    // Tema
+    const temaAtual = localStorage.getItem("tema") || "claro";
+    document.getElementById("temaSite").value = temaAtual;
+    if (temaAtual === "escuro") body.classList.add("dark");
+
+    document.getElementById("temaSite").addEventListener("change", (e) => {
+      const valor = e.target.value;
+      localStorage.setItem("tema", valor);
+      body.classList.toggle("dark", valor === "escuro");
+    });
+
+    // Idioma
+    const idioma = localStorage.getItem("idioma") || "pt";
+    document.getElementById("idioma").value = idioma;
+    aplicarIdioma(idioma);
+
+    document.getElementById("idioma").addEventListener("change", (e) => {
+      localStorage.setItem("idioma", e.target.value);
+      aplicarIdioma(e.target.value);
+    });
+
+    function aplicarIdioma(lang) {
+      const traduzir = {
+        "pt": {
+          "tituloPrincipal": "Fórum Anônimo",
+          "temasTitulo": "Temas",
+          "acessadosTitulo": "Mais acessados",
+          "botaoPostar": "Postar",
+        },
+        "en": {
+          "tituloPrincipal": "Anonymous Forum",
+          "temasTitulo": "Topics",
+          "acessadosTitulo": "Most viewed",
+          "botaoPostar": "Post",
+        }
+      };
+      const t = traduzir[lang];
+      document.getElementById("tituloPrincipal").textContent = t.tituloPrincipal;
+      document.getElementById("temasTitulo").textContent = t.temasTitulo;
+      document.getElementById("acessadosTitulo").textContent = t.acessadosTitulo;
+      document.getElementById("botaoPostar").textContent = t.botaoPostar;
+    }
+
+    function abrirConfiguracoes() {
+      document.getElementById("modalConfig").style.display = "block";
+    }
+
+    function fecharConfiguracoes() {
+      document.getElementById("modalConfig").style.display = "none";
+    }
+
+    exibirPosts(posts);
+    atualizarMaisAcessados();
   </script>
 </body>
-</html>
-
+  </html>
