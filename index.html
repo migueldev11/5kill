@@ -174,11 +174,9 @@
   </div>
 
   <script type="module">
-    // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, set, get, push, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDoGZRT9rS4KCkSP6AV99GDs2gEfdoyAVU",
       authDomain: "kill-ea075.firebaseapp.com",
@@ -188,7 +186,6 @@
       appId: "1:961864950723:web:f5f85735d0fe3eea001376"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
@@ -199,7 +196,6 @@
     }
     const anonimoNome = "anônimo_" + contadorAnonimo;
 
-    // Carregar posts do Firebase
     function carregarPosts() {
       const postsRef = ref(db, 'posts/');
       get(postsRef).then((snapshot) => {
@@ -214,7 +210,6 @@
       });
     }
 
-    // Salvar novo post no Firebase
     document.getElementById("postForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const titulo = document.getElementById("titulo").value;
@@ -224,7 +219,6 @@
       const imagemURL = imagemInput.files[0] ? URL.createObjectURL(imagemInput.files[0]) : null;
 
       const novoPost = {
-        id: Date.now(),
         titulo,
         conteudo,
         autor: anonimoNome,
@@ -234,8 +228,9 @@
         visualizacoes: 0
       };
 
-      const postRef = ref(db, 'posts/' + novoPost.id);
-      set(postRef, novoPost);
+      const postRef = ref(db, 'posts/');
+      const newPostRef = push(postRef);
+      set(newPostRef, novoPost);
 
       e.target.reset();
       carregarPosts();  // Recarrega os posts após a postagem
@@ -303,53 +298,3 @@
         }
       });
     }
-
-    // Tema
-    const temaAtual = localStorage.getItem("tema") || "claro";
-    document.getElementById("temaSite").value = temaAtual;
-    if (temaAtual === "escuro") body.classList.add("dark");
-
-    document.getElementById("temaSite").addEventListener("change", (e) => {
-      const valor = e.target.value;
-      localStorage.setItem("tema", valor);
-      body.classList.toggle("dark", valor === "escuro");
-    });
-
-    // Idioma
-    const idioma = localStorage.getItem("idioma") || "pt";
-    document.getElementById("idioma").value = idioma;
-    aplicarIdioma(idioma);
-
-    document.getElementById("idioma").addEventListener("change", (e) => {
-      localStorage.setItem("idioma", e.target.value);
-      aplicarIdioma(e.target.value);
-    });
-
-    function aplicarIdioma(lang) {
-      const traduzir = {
-        "pt": {
-          "tituloPrincipal": "Fórum Anônimo",
-          "temasTitulo": "Temas",
-          "acessadosTitulo": "Mais acessados",
-          "botaoPostar": "Postar",
-        },
-        "en": {
-          "tituloPrincipal": "Anonymous Forum",
-          "temasTitulo": "Topics",
-          "acessadosTitulo": "Most viewed",
-          "botaoPostar": "Post",
-        }
-      };
-      const t = traduzir[lang];
-      document.getElementById("tituloPrincipal").textContent = t.tituloPrincipal;
-      document.getElementById("temasTitulo").textContent = t.temasTitulo;
-      document.getElementById("acessadosTitulo").textContent = t.acessadosTitulo;
-      document.getElementById("botaoPostar").textContent = t.botaoPostar;
-    }
-
-    function abrirConfiguracoes() {
-      document.getElementById("modalConfig").style.display = "block";
-    }
-
-    function fecharConfiguracoes() {
-      document.getElementById("modalConfig").style.display = "none";
