@@ -1,207 +1,129 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Fórum Anônimo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fórum</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
       margin: 0;
-      display: flex;
-      background: #f4f4f4;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.dark {
-      background: #1e1e1e;
-      color: white;
-    }
-    .container {
-      display: flex;
-      width: 100%;
-    }
-    .sidebar {
-      width: 250px;
-      background: #ddd;
-      padding: 10px;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-      transition: background 0.3s;
-    }
-    body.dark .sidebar {
-      background: #2c2c2c;
-    }
-    .sidebar input {
-      width: 100%;
-      padding: 5px;
-      margin-bottom: 10px;
-    }
-    .sidebar ul {
-      list-style: none;
       padding: 0;
     }
-    .sidebar li {
-      cursor: pointer;
-      padding: 5px;
+    h1 {
+      text-align: center;
+      margin-top: 20px;
     }
-    .sidebar li:hover {
-      background: #bbb;
-    }
-    body.dark .sidebar li:hover {
-      background: #444;
-    }
-    .content {
-      flex: 1;
+    .container {
+      width: 80%;
+      margin: 0 auto;
       padding: 20px;
     }
-    #postForm {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 30px;
+    .form-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
     }
-    #postForm input, #postForm select, #postForm textarea {
-      padding: 8px;
-      font-size: 14px;
+    .form-container input, .form-container textarea {
       width: 100%;
-    }
-    #postForm button {
       padding: 10px;
-      background: #333;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .form-container button {
+      padding: 10px 20px;
+      background-color: #007bff;
       color: white;
       border: none;
+      border-radius: 4px;
       cursor: pointer;
     }
+    .form-container button:hover {
+      background-color: #0056b3;
+    }
     .post {
-      background: white;
-      padding: 15px;
+      background-color: white;
+      padding: 20px;
       margin-bottom: 20px;
-      border-radius: 5px;
-      color: black;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    body.dark .post {
-      background: #2e2e2e;
-      color: white;
+    .post h2 {
+      margin-top: 0;
     }
-    .post-img {
+    .post img {
       max-width: 100%;
-      margin-top: 10px;
-    }
-    .comentario-textarea {
-      width: 100%;
-      margin-top: 10px;
-      padding: 6px;
+      height: auto;
+      border-radius: 8px;
     }
     .views {
-      font-size: 12px;
+      font-size: 0.9em;
       color: gray;
     }
-    .modal {
-      position: fixed;
-      top: 20%;
-      left: 50%;
-      transform: translate(-50%, -20%);
-      background: white;
-      padding: 20px;
-      border-radius: 5px;
-      display: none;
-      z-index: 999;
-    }
-    body.dark .modal {
-      background: #2e2e2e;
-      color: white;
-    }
-    .modal label {
-      display: block;
-      margin: 10px 0 5px;
+    .post p {
+      font-size: 1em;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
+
+  <h1>Fórum</h1>
+
   <div class="container">
-    <aside class="sidebar">
-      <input type="text" id="search" placeholder="Pesquisar...">
-      <h3 id="temasTitulo">Temas</h3>
-      <ul id="temaList">
-        <li onclick="filtrarPorTema('Geral')">Geral</li>
-        <li onclick="filtrarPorTema('Tecnologia')">Tecnologia</li>
-        <li onclick="filtrarPorTema('Música')">Música</li>
-        <li onclick="filtrarPorTema('Jogos')">Jogos</li>
-        <li onclick="filtrarPorTema('Notícias')">Notícias</li>
-        <li onclick="filtrarPorTema('Aleatório')">Aleatório</li>
-      </ul>
-      <h3 id="acessadosTitulo">Mais acessados</h3>
-      <ul id="maisAcessados"></ul>
-      <hr>
-      <button onclick="abrirConfiguracoes()">⚙️ Configurações</button>
-    </aside>
-
-    <main class="content">
-      <h1 id="tituloPrincipal">Fórum Anônimo</h1>
+    <div class="form-container">
+      <h2>Nova Postagem</h2>
       <form id="postForm">
-        <input type="text" id="titulo" placeholder="Título do post" required>
-        <select id="tema">
-          <option>Geral</option>
-          <option>Tecnologia</option>
-          <option>Música</option>
-          <option>Jogos</option>
-          <option>Notícias</option>
-          <option>Aleatório</option>
-        </select>
-        <textarea id="conteudo" placeholder="Escreva aqui..." required></textarea>
-        <input type="file" id="imagem">
-        <button type="submit" id="botaoPostar">Postar</button>
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" required><br>
+
+        <label for="conteudo">Conteúdo</label>
+        <textarea id="conteudo" required></textarea><br>
+
+        <label for="tema">Tema</label>
+        <input type="text" id="tema" required><br>
+
+        <label for="imagem">Imagem</label>
+        <input type="file" id="imagem"><br><br>
+
+        <button type="submit">Enviar</button>
       </form>
-      <div id="posts"></div>
-    </main>
-  </div>
+    </div>
 
-  <!-- Modal de configurações -->
-  <div class="modal" id="modalConfig">
-    <h3>Configurações</h3>
-    <label for="temaSite">Tema:</label>
-    <select id="temaSite">
-      <option value="claro">Claro</option>
-      <option value="escuro">Escuro</option>
-    </select>
-
-    <label for="idioma">Idioma:</label>
-    <select id="idioma">
-      <option value="pt">Português</option>
-      <option value="en">English</option>
-    </select>
-
-    <br><br>
-    <button onclick="fecharConfiguracoes()">Fechar</button>
+    <div id="posts"></div>
   </div>
 
   <script type="module">
+    // Importando as funções do Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, set, get, push, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
+    // Configuração do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDoGZRT9rS4KCkSP6AV99GDs2gEfdoyAVU",
       authDomain: "kill-ea075.firebaseapp.com",
+      databaseURL: "https://kill-ea075-default-rtdb.firebaseio.com",
       projectId: "kill-ea075",
       storageBucket: "kill-ea075.firebasestorage.app",
       messagingSenderId: "961864950723",
       appId: "1:961864950723:web:f5f85735d0fe3eea001376"
     };
 
+    // Inicializando o Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const body = document.body;
-    let contadorAnonimo = localStorage.getItem("anonID") || 1;
-    if (!localStorage.getItem("anonID")) {
-      localStorage.setItem("anonID", contadorAnonimo);
-    }
-    const anonimoNome = "anônimo_" + contadorAnonimo;
-
+    // Função para carregar os posts do Firebase
     function carregarPosts() {
       const postsRef = ref(db, 'posts/');
       get(postsRef).then((snapshot) => {
         if (snapshot.exists()) {
           const posts = snapshot.val();
-          exibirPosts(Object.values(posts));
+          exibirPosts(Object.values(posts));  // Exibe os posts após carregá-los
         } else {
           console.log("Não há posts disponíveis.");
         }
@@ -210,35 +132,10 @@
       });
     }
 
-    document.getElementById("postForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const titulo = document.getElementById("titulo").value;
-      const conteudo = document.getElementById("conteudo").value;
-      const tema = document.getElementById("tema").value;
-      const imagemInput = document.getElementById("imagem");
-      const imagemURL = imagemInput.files[0] ? URL.createObjectURL(imagemInput.files[0]) : null;
-
-      const novoPost = {
-        titulo,
-        conteudo,
-        autor: anonimoNome,
-        tema,
-        imagem: imagemURL,
-        comentarios: [],
-        visualizacoes: 0
-      };
-
-      const postRef = ref(db, 'posts/');
-      const newPostRef = push(postRef);
-      set(newPostRef, novoPost);
-
-      e.target.reset();
-      carregarPosts();  // Recarrega os posts após a postagem
-    });
-
+    // Função para exibir os posts
     function exibirPosts(lista) {
       const area = document.getElementById("posts");
-      area.innerHTML = "";
+      area.innerHTML = "";  // Limpa os posts anteriores
       lista.forEach(post => {
         const div = document.createElement("div");
         div.className = "post";
@@ -248,53 +145,45 @@
           <p>${post.conteudo}</p>
           ${post.imagem ? `<img src="${post.imagem}" class="post-img">` : ""}
           <p class="views">Visualizações: ${post.visualizacoes}</p>
-          <textarea placeholder="Comentar..." class="comentario-textarea"></textarea>
-          <button onclick="comentar(${post.id}, this)">Comentar</button>
-          <div class="comentarios">
-            ${post.comentarios.map(c => `<p>${c}</p>`).join("")}
-          </div>
         `;
-        post.visualizacoes++;
         area.appendChild(div);
       });
-      atualizarMaisAcessados();
     }
 
-    function comentar(id, botao) {
-      const texto = botao.previousElementSibling.value.trim();
-      if (texto) {
-        const postRef = ref(db, 'posts/' + id);
-        update(postRef, {
-          comentarios: [...post.comentarios, texto]
-        });
-      }
-    }
+    // Função para enviar um novo post para o Firebase
+    document.getElementById("postForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-    function atualizarMaisAcessados() {
-      const postsRef = ref(db, 'posts/');
-      get(postsRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const posts = snapshot.val();
-          const topPosts = Object.values(posts).sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
-          const lista = document.getElementById("maisAcessados");
-          lista.innerHTML = "";
-          topPosts.forEach(p => {
-            const li = document.createElement("li");
-            li.textContent = p.titulo;
-            li.onclick = () => exibirPosts([p]);
-            lista.appendChild(li);
-          });
-        }
-      });
-    }
+      const titulo = document.getElementById("titulo").value;
+      const conteudo = document.getElementById("conteudo").value;
+      const tema = document.getElementById("tema").value;
+      const imagemInput = document.getElementById("imagem");
+      const imagemURL = imagemInput.files[0] ? URL.createObjectURL(imagemInput.files[0]) : null;
 
-    function filtrarPorTema(tema) {
-      const postsRef = ref(db, 'posts/');
-      get(postsRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const posts = snapshot.val();
-          const filtrados = Object.values(posts).filter(p => p.tema === tema);
-          exibirPosts(filtrados);
-        }
-      });
-    }
+      const novoPost = {
+        id: Date.now(),
+        titulo,
+        conteudo,
+        autor: "Anônimo",  // Pode adicionar um campo para o nome do autor
+        tema,
+        imagem: imagemURL,
+        comentarios: [],
+        visualizacoes: 0
+      };
+
+      // Adicionando o novo post ao banco de dados Firebase
+      const postRef = ref(db, 'posts/' + novoPost.id);
+      set(postRef, novoPost)
+        .then(() => {
+          carregarPosts();  // Recarrega os posts após o envio
+          document.getElementById("postForm").reset();  // Limpa o formulário
+        })
+        .catch(error => console.error("Erro ao salvar post:", error));
+    });
+
+    // Carregar posts ao carregar a página
+    carregarPosts();
+  </script>
+
+</body>
+</html>
