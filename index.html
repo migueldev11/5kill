@@ -238,6 +238,7 @@
       set(postRef, novoPost);
 
       e.target.reset();
+      carregarPosts();  // Recarrega os posts após a postagem
     });
 
     function exibirPosts(lista) {
@@ -352,9 +353,3 @@
 
     function fecharConfiguracoes() {
       document.getElementById("modalConfig").style.display = "none";
-    }
-
-    carregarPosts();
-  </script>
-</body>
-                                                              </html>p
