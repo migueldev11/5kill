@@ -127,6 +127,10 @@
         <li onclick="filtrarPorTema('Jogos')">Jogos</li>
         <li onclick="filtrarPorTema('Notícias')">Notícias</li>
         <li onclick="filtrarPorTema('Aleatório')">Aleatório</li>
+        <li onclick="filtrarPorTema('Arte')">Arte</li>
+        <li onclick="filtrarPorTema('Ciência')">Ciência</li>
+        <li onclick="filtrarPorTema('Esportes')">Esportes</li>
+        <li onclick="filtrarPorTema('Literatura')">Literatura</li>
       </ul>
       <h3 id="acessadosTitulo">Mais acessados</h3>
       <ul id="maisAcessados"></ul>
@@ -145,6 +149,10 @@
           <option>Jogos</option>
           <option>Notícias</option>
           <option>Aleatório</option>
+          <option>Arte</option>
+          <option>Ciência</option>
+          <option>Esportes</option>
+          <option>Literatura</option>
         </select>
         <textarea id="conteudo" placeholder="Escreva aqui..." required></textarea>
         <input type="file" id="imagem">
@@ -173,21 +181,53 @@
     <button onclick="fecharConfiguracoes()">Fechar</button>
   </div>
 
-  <script>
-    const body = document.body;
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child, update, push } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    // Nome anônimo
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoGZRT9rS4KCkSP6AV99GDs2gEfdoyAVU",
+      authDomain: "kill-ea075.firebaseapp.com",
+      databaseURL: "https://kill-ea075-default-rtdb.firebaseio.com",
+      projectId: "kill-ea075",
+      storageBucket: "kill-ea075.firebasestorage.app",
+      messagingSenderId: "961864950723",
+      appId: "1:961864950723:web:f5f85735d0fe3eea001376"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const postsRef = ref(db, 'posts/');
+
+    // Incrementar número de anônimos
     let contadorAnonimo = localStorage.getItem("anonID") || 1;
     if (!localStorage.getItem("anonID")) {
       localStorage.setItem("anonID", contadorAnonimo);
     }
+
+    // Nome do anônimo
     const anonimoNome = "anônimo_" + contadorAnonimo;
 
-    let posts = JSON.parse(localStorage.getItem("posts")) || [];
+    // Obter os posts do Firebase
+    function obterPosts() {
+      get(postsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const posts = snapshot.val();
+          exibirPosts(Object.values(posts));
+        } else {
+          console.log("Nenhum post encontrado");
+        }
+      }).catch((error) => {
+        console.error("Erro ao ler os dados:", error);
+      });
+    }
 
-    function salvarPosts() {
-      localStorage.setItem("posts", JSON.stringify(posts));
-      atualizarMaisAcessados();
+    function salvarPost(post) {
+      const newPostKey = push(postsRef).key;
+      set(ref(db, 'posts/' + newPostKey), post);
     }
 
     document.getElementById("postForm").addEventListener("submit", function(e) {
@@ -198,20 +238,24 @@
       const imagemInput = document.getElementById("imagem");
       const imagemURL = imagemInput.files[0] ? URL.createObjectURL(imagemInput.files[0]) : null;
 
+      // Incrementar contador de anônimos
+      localStorage.setItem("anonID", ++contadorAnonimo);
+      const novoAnonimo = "anônimo_" + contadorAnonimo;
+
       const novoPost = {
         id: Date.now(),
         titulo,
         conteudo,
-        autor: anonimoNome,
+        autor: novoAnonimo,
         tema,
         imagem: imagemURL,
         comentarios: [],
         visualizacoes: 0
       };
-      posts.unshift(novoPost);
-      salvarPosts();
-      exibirPosts(posts);
+      
+      salvarPost(novoPost);
       e.target.reset();
+      obterPosts();
     });
 
     function exibirPosts(lista) {
@@ -235,29 +279,22 @@
         post.visualizacoes++;
         area.appendChild(div);
       });
-      salvarPosts();
     }
 
     function comentar(id, botao) {
       const texto = botao.previousElementSibling.value.trim();
       if (texto) {
-        const post = posts.find(p => p.id === id);
-        post.comentarios.push(texto);
-        salvarPosts();
-        exibirPosts(posts);
+        // Comentar no Firebase
+        const postRef = ref(db, 'posts/' + id);
+        get(postRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            const post = snapshot.val();
+            post.comentarios.push(texto);
+            update(postRef, { comentarios: post.comentarios });
+            obterPosts();
+          }
+        });
       }
-    }
-
-    function atualizarMaisAcessados() {
-      const topPosts = [...posts].sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
-      const lista = document.getElementById("maisAcessados");
-      lista.innerHTML = "";
-      topPosts.forEach(p => {
-        const li = document.createElement("li");
-        li.textContent = p.titulo;
-        li.onclick = () => exibirPosts([p]);
-        lista.appendChild(li);
-      });
     }
 
     function filtrarPorTema(tema) {
@@ -265,59 +302,8 @@
       exibirPosts(filtrados);
     }
 
-    // Tema
-    const temaAtual = localStorage.getItem("tema") || "claro";
-    document.getElementById("temaSite").value = temaAtual;
-    if (temaAtual === "escuro") body.classList.add("dark");
-
-    document.getElementById("temaSite").addEventListener("change", (e) => {
-      const valor = e.target.value;
-      localStorage.setItem("tema", valor);
-      body.classList.toggle("dark", valor === "escuro");
-    });
-
-    // Idioma
-    const idioma = localStorage.getItem("idioma") || "pt";
-    document.getElementById("idioma").value = idioma;
-    aplicarIdioma(idioma);
-
-    document.getElementById("idioma").addEventListener("change", (e) => {
-      localStorage.setItem("idioma", e.target.value);
-      aplicarIdioma(e.target.value);
-    });
-
-    function aplicarIdioma(lang) {
-      const traduzir = {
-        "pt": {
-          "tituloPrincipal": "Fórum Anônimo",
-          "temasTitulo": "Temas",
-          "acessadosTitulo": "Mais acessados",
-          "botaoPostar": "Postar",
-        },
-        "en": {
-          "tituloPrincipal": "Anonymous Forum",
-          "temasTitulo": "Topics",
-          "acessadosTitulo": "Most viewed",
-          "botaoPostar": "Post",
-        }
-      };
-      const t = traduzir[lang];
-      document.getElementById("tituloPrincipal").textContent = t.tituloPrincipal;
-      document.getElementById("temasTitulo").textContent = t.temasTitulo;
-      document.getElementById("acessadosTitulo").textContent = t.acessadosTitulo;
-      document.getElementById("botaoPostar").textContent = t.botaoPostar;
-    }
-
-    function abrirConfiguracoes() {
-      document.getElementById("modalConfig").style.display = "block";
-    }
-
-    function fecharConfiguracoes() {
-      document.getElementById("modalConfig").style.display = "none";
-    }
-
-    exibirPosts(posts);
-    atualizarMaisAcessados();
+    // Inicializando os posts
+    obterPosts();
   </script>
 </body>
-  </html>
+        </html>
