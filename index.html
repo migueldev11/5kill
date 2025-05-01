@@ -173,11 +173,10 @@
     <button onclick="fecharConfiguracoes()">Fechar</button>
   </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, set, push, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -191,22 +190,31 @@
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
+    const db = getDatabase(app);
 
-    // Nome anônimo
+    const body = document.body;
     let contadorAnonimo = localStorage.getItem("anonID") || 1;
     if (!localStorage.getItem("anonID")) {
       localStorage.setItem("anonID", contadorAnonimo);
     }
     const anonimoNome = "anônimo_" + contadorAnonimo;
 
-    let posts = JSON.parse(localStorage.getItem("posts")) || [];
-
-    function salvarPosts() {
-      localStorage.setItem("posts", JSON.stringify(posts));
-      atualizarMaisAcessados();
+    // Carregar posts do Firebase
+    function carregarPosts() {
+      const postsRef = ref(db, 'posts/');
+      get(postsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const posts = snapshot.val();
+          exibirPosts(Object.values(posts));
+        } else {
+          console.log("Não há posts disponíveis.");
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
     }
 
+    // Salvar novo post no Firebase
     document.getElementById("postForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const titulo = document.getElementById("titulo").value;
@@ -226,13 +234,9 @@
         visualizacoes: 0
       };
 
-      // Salvar no Firebase Database
-      const newPostRef = push(ref(database, 'posts'));
-      set(newPostRef, novoPost);
+      const postRef = ref(db, 'posts/' + novoPost.id);
+      set(postRef, novoPost);
 
-      posts.unshift(novoPost);
-      salvarPosts();
-      exibirPosts(posts);
       e.target.reset();
     });
 
@@ -257,34 +261,46 @@
         post.visualizacoes++;
         area.appendChild(div);
       });
-      salvarPosts();
+      atualizarMaisAcessados();
     }
 
     function comentar(id, botao) {
       const texto = botao.previousElementSibling.value.trim();
       if (texto) {
-        const post = posts.find(p => p.id === id);
-        post.comentarios.push(texto);
-        salvarPosts();
-        exibirPosts(posts);
+        const postRef = ref(db, 'posts/' + id);
+        update(postRef, {
+          comentarios: [...post.comentarios, texto]
+        });
       }
     }
 
     function atualizarMaisAcessados() {
-      const topPosts = [...posts].sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
-      const lista = document.getElementById("maisAcessados");
-      lista.innerHTML = "";
-      topPosts.forEach(p => {
-        const li = document.createElement("li");
-        li.textContent = p.titulo;
-        li.onclick = () => exibirPosts([p]);
-        lista.appendChild(li);
+      const postsRef = ref(db, 'posts/');
+      get(postsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const posts = snapshot.val();
+          const topPosts = Object.values(posts).sort((a, b) => b.visualizacoes - a.visualizacoes).slice(0, 5);
+          const lista = document.getElementById("maisAcessados");
+          lista.innerHTML = "";
+          topPosts.forEach(p => {
+            const li = document.createElement("li");
+            li.textContent = p.titulo;
+            li.onclick = () => exibirPosts([p]);
+            lista.appendChild(li);
+          });
+        }
       });
     }
 
     function filtrarPorTema(tema) {
-      const filtrados = posts.filter(p => p.tema === tema);
-      exibirPosts(filtrados);
+      const postsRef = ref(db, 'posts/');
+      get(postsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const posts = snapshot.val();
+          const filtrados = Object.values(posts).filter(p => p.tema === tema);
+          exibirPosts(filtrados);
+        }
+      });
     }
 
     // Tema
@@ -338,8 +354,7 @@
       document.getElementById("modalConfig").style.display = "none";
     }
 
-    exibirPosts(posts);
-    atualizarMaisAcessados();
+    carregarPosts();
   </script>
 </body>
-  </html>
+                                                              </html>p
