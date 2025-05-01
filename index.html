@@ -173,8 +173,25 @@
     <button onclick="fecharConfiguracoes()">Fechar</button>
   </div>
 
-  <script>
-    const body = document.body;
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, set, push, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoGZRT9rS4KCkSP6AV99GDs2gEfdoyAVU",
+      authDomain: "kill-ea075.firebaseapp.com",
+      projectId: "kill-ea075",
+      storageBucket: "kill-ea075.firebasestorage.app",
+      messagingSenderId: "961864950723",
+      appId: "1:961864950723:web:f5f85735d0fe3eea001376"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
     // Nome anônimo
     let contadorAnonimo = localStorage.getItem("anonID") || 1;
@@ -208,6 +225,11 @@
         comentarios: [],
         visualizacoes: 0
       };
+
+      // Salvar no Firebase Database
+      const newPostRef = push(ref(database, 'posts'));
+      set(newPostRef, novoPost);
+
       posts.unshift(novoPost);
       salvarPosts();
       exibirPosts(posts);
