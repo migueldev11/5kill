@@ -90,6 +90,18 @@
       margin-top: 10px;
       padding: 6px;
     }
+    .comentarios {
+      margin-top: 15px;
+    }
+    .comentario {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .comentarios button {
+      margin-top: 5px;
+    }
     .views {
       font-size: 12px;
       color: gray;
@@ -270,10 +282,10 @@
           <p>${post.conteudo}</p>
           ${post.imagem ? `<img src="${post.imagem}" class="post-img">` : ""}
           <p class="views">Visualizações: ${post.visualizacoes}</p>
-          <textarea placeholder="Comentar..." class="comentario-textarea"></textarea>
-          <button onclick="comentar(${post.id}, this)">Comentar</button>
-          <div class="comentarios">
-            ${post.comentarios.map(c => `<p>${c}</p>`).join("")}
+          <textarea placeholder="Comentar..." class="comentario-textarea" id="comentario_${post.id}"></textarea>
+          <button onclick="comentar(${post.id})">Comentar</button>
+          <div class="comentarios" id="comentarios_${post.id}">
+            ${post.comentarios.map(c => `<p class="comentario">${c}</p>`).join("")}
           </div>
         `;
         post.visualizacoes++;
@@ -281,15 +293,15 @@
       });
     }
 
-    function comentar(id, botao) {
-      const texto = botao.previousElementSibling.value.trim();
-      if (texto) {
-        // Comentar no Firebase
-        const postRef = ref(db, 'posts/' + id);
+    function comentar(postId) {
+      const comentarioTextarea = document.getElementById(`comentario_${postId}`);
+      const comentarioText = comentarioTextarea.value.trim();
+      if (comentarioText) {
+        const postRef = ref(db, 'posts/' + postId);
         get(postRef).then((snapshot) => {
           if (snapshot.exists()) {
             const post = snapshot.val();
-            post.comentarios.push(texto);
+            post.comentarios.push(comentarioText);
             update(postRef, { comentarios: post.comentarios });
             obterPosts();
           }
@@ -298,12 +310,17 @@
     }
 
     function filtrarPorTema(tema) {
-      const filtrados = posts.filter(p => p.tema === tema);
-      exibirPosts(filtrados);
+      get(postsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const posts = snapshot.val();
+          const postsFiltrados = Object.values(posts).filter(post => post.tema === tema);
+          exibirPosts(postsFiltrados);
+        }
+      });
     }
 
     // Inicializando os posts
     obterPosts();
   </script>
 </body>
-        </html>
+                           </html>
