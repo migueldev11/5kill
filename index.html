@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Fórum Anônimo</title>
   <style>
     body {
@@ -24,12 +24,11 @@
       background: #ddd;
       padding: 10px;
       box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-      transition: background 0.3s;
     }
     body.dark .sidebar {
       background: #2c2c2c;
     }
-    .sidebar input {
+    .sidebar input, .sidebar button {
       width: 100%;
       padding: 5px;
       margin-bottom: 10px;
@@ -52,24 +51,6 @@
       flex: 1;
       padding: 20px;
     }
-    #postForm {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 30px;
-    }
-    #postForm input, #postForm select, #postForm textarea {
-      padding: 8px;
-      font-size: 14px;
-      width: 100%;
-    }
-    #postForm button {
-      padding: 10px;
-      background: #333;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
     .post {
       background: white;
       padding: 15px;
@@ -81,37 +62,17 @@
       background: #2e2e2e;
       color: white;
     }
-    .post-img {
-      max-width: 100%;
-      margin-top: 10px;
-    }
     .comentario-textarea {
       width: 100%;
       margin-top: 10px;
-      padding: 6px;
-    }
-    .comentarios {
-      margin-top: 15px;
-    }
-    .comentario {
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-    .comentarios button {
-      margin-top: 5px;
-    }
-    .views {
-      font-size: 12px;
-      color: gray;
     }
     .modal {
       position: fixed;
-      top: 20%;
+      top: 30%;
       left: 50%;
-      transform: translate(-50%, -20%);
+      transform: translate(-50%, -30%);
       background: white;
+      color: black;
       padding: 20px;
       border-radius: 5px;
       display: none;
@@ -121,17 +82,13 @@
       background: #2e2e2e;
       color: white;
     }
-    .modal label {
-      display: block;
-      margin: 10px 0 5px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <aside class="sidebar">
       <input type="text" id="search" placeholder="Pesquisar...">
-      <h3 id="temasTitulo">Temas</h3>
+      <h3>Temas</h3>
       <ul id="temaList">
         <li onclick="filtrarPorTema('Geral')">Geral</li>
         <li onclick="filtrarPorTema('Tecnologia')">Tecnologia</li>
@@ -139,21 +96,13 @@
         <li onclick="filtrarPorTema('Jogos')">Jogos</li>
         <li onclick="filtrarPorTema('Notícias')">Notícias</li>
         <li onclick="filtrarPorTema('Aleatório')">Aleatório</li>
-        <li onclick="filtrarPorTema('Arte')">Arte</li>
-        <li onclick="filtrarPorTema('Ciência')">Ciência</li>
-        <li onclick="filtrarPorTema('Esportes')">Esportes</li>
-        <li onclick="filtrarPorTema('Literatura')">Literatura</li>
       </ul>
-      <h3 id="acessadosTitulo">Mais acessados</h3>
-      <ul id="maisAcessados"></ul>
-      <hr>
       <button onclick="abrirConfiguracoes()">⚙️ Configurações</button>
     </aside>
-
     <main class="content">
-      <h1 id="tituloPrincipal">Fórum Anônimo</h1>
+      <h1>Fórum Anônimo</h1>
       <form id="postForm">
-        <input type="text" id="titulo" placeholder="Título do post" required>
+        <input type="text" id="titulo" placeholder="Título" required>
         <select id="tema">
           <option>Geral</option>
           <option>Tecnologia</option>
@@ -161,20 +110,14 @@
           <option>Jogos</option>
           <option>Notícias</option>
           <option>Aleatório</option>
-          <option>Arte</option>
-          <option>Ciência</option>
-          <option>Esportes</option>
-          <option>Literatura</option>
         </select>
-        <textarea id="conteudo" placeholder="Escreva aqui..." required></textarea>
-        <input type="file" id="imagem">
-        <button type="submit" id="botaoPostar">Postar</button>
+        <textarea id="conteudo" placeholder="Conteúdo" required></textarea>
+        <button type="submit">Postar</button>
       </form>
       <div id="posts"></div>
     </main>
   </div>
 
-  <!-- Modal de configurações -->
   <div class="modal" id="modalConfig">
     <h3>Configurações</h3>
     <label for="temaSite">Tema:</label>
@@ -182,146 +125,115 @@
       <option value="claro">Claro</option>
       <option value="escuro">Escuro</option>
     </select>
-
-    <label for="idioma">Idioma:</label>
-    <select id="idioma">
-      <option value="pt">Português</option>
-      <option value="en">English</option>
-    </select>
-
     <br><br>
     <button onclick="fecharConfiguracoes()">Fechar</button>
   </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update, push } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDoGZRT9rS4KCkSP6AV99GDs2gEfdoyAVU",
       authDomain: "kill-ea075.firebaseapp.com",
       databaseURL: "https://kill-ea075-default-rtdb.firebaseio.com",
       projectId: "kill-ea075",
-      storageBucket: "kill-ea075.firebasestorage.app",
+      storageBucket: "kill-ea075.appspot.com",
       messagingSenderId: "961864950723",
       appId: "1:961864950723:web:f5f85735d0fe3eea001376"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const postsRef = ref(db, 'posts/');
 
-    // Incrementar número de anônimos
-    let contadorAnonimo = localStorage.getItem("anonID") || 1;
-    if (!localStorage.getItem("anonID")) {
-      localStorage.setItem("anonID", contadorAnonimo);
-    }
+    let anonId = localStorage.getItem("anonID") || 1;
+    const nome = "anônimo_" + anonId;
+    localStorage.setItem("anonID", anonId++);
 
-    // Nome do anônimo
-    const anonimoNome = "anônimo_" + contadorAnonimo;
+    const postForm = document.getElementById("postForm");
+    const postsDiv = document.getElementById("posts");
 
-    // Obter os posts do Firebase
-    function obterPosts() {
-      get(postsRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const posts = snapshot.val();
-          exibirPosts(Object.values(posts));
-        } else {
-          console.log("Nenhum post encontrado");
-        }
-      }).catch((error) => {
-        console.error("Erro ao ler os dados:", error);
-      });
-    }
-
-    function salvarPost(post) {
-      const newPostKey = push(postsRef).key;
-      set(ref(db, 'posts/' + newPostKey), post).then(() => {
-        // Atualizar os posts na tela assim que salvar
-        exibirPosts([post]);  // Mostrar o post recém criado sem recarregar a página
-      });
-    }
-
-    document.getElementById("postForm").addEventListener("submit", function(e) {
+    postForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const titulo = document.getElementById("titulo").value;
       const conteudo = document.getElementById("conteudo").value;
       const tema = document.getElementById("tema").value;
-      const imagemInput = document.getElementById("imagem");
-      const imagemURL = imagemInput.files[0] ? URL.createObjectURL(imagemInput.files[0]) : null;
-
-      // Incrementar contador de anônimos
-      localStorage.setItem("anonID", ++contadorAnonimo);
-      const novoAnonimo = "anônimo_" + contadorAnonimo;
-
-      const novoPost = {
-        id: Date.now(),
+      const post = {
         titulo,
         conteudo,
-        autor: novoAnonimo,
         tema,
-        imagem: imagemURL,
-        comentarios: [],
-        visualizacoes: 0
+        autor: nome,
+        comentarios: []
       };
-      
-      salvarPost(novoPost);
-      e.target.reset();
+      await push(ref(db, "posts"), post);
+      postForm.reset();
     });
 
-    function exibirPosts(lista) {
-      const area = document.getElementById("posts");
-      lista.forEach(post => {
-        const div = document.createElement("div");
-        div.className = "post";
-        div.innerHTML = `
-          <h2>${post.titulo}</h2>
-          <p><strong>${post.autor}</strong> - <em>${post.tema}</em></p>
-          <p>${post.conteudo}</p>
-          ${post.imagem ? `<img src="${post.imagem}" class="post-img">` : ""}
-          <p class="views">Visualizações: ${post.visualizacoes}</p>
-          <textarea placeholder="Comentar..." class="comentario-textarea" id="comentario_${post.id}"></textarea>
-          <button onclick="comentar(${post.id})">Comentar</button>
-          <div class="comentarios" id="comentarios_${post.id}">
-            ${post.comentarios.map(c => `<p class="comentario">${c}</p>`).join("")}
-          </div>
-        `;
-        post.visualizacoes++;
-        area.appendChild(div);
-      });
+    function renderPost(id, post) {
+      const div = document.createElement("div");
+      div.className = "post";
+      div.innerHTML = `
+        <h2>${post.titulo}</h2>
+        <p><strong>${post.autor}</strong> - <em>${post.tema}</em></p>
+        <p>${post.conteudo}</p>
+        <textarea class="comentario-textarea" placeholder="Comentar..."></textarea>
+        <button onclick="comentar('${id}', this)">Comentar</button>
+        <div class="comentarios">${post.comentarios.map(c => `<p>${c}</p>`).join("")}</div>
+      `;
+      return div;
     }
 
-    function comentar(postId) {
-      const comentarioTextarea = document.getElementById(`comentario_${postId}`);
-      const comentarioText = comentarioTextarea.value.trim();
-      if (comentarioText) {
-        const postRef = ref(db, 'posts/' + postId);
-        get(postRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            const post = snapshot.val();
-            post.comentarios.push(comentarioText);
-            update(postRef, { comentarios: post.comentarios });
-            obterPosts(); // Recarregar os posts para exibir o novo comentário
+    window.comentar = async (id, botao) => {
+      const comentario = botao.previousElementSibling.value.trim();
+      if (comentario) {
+        const postRef = ref(db, "posts/" + id + "/comentarios");
+        const atual = botao.nextElementSibling.innerHTML;
+        await push(postRef, comentario);
+        botao.previousElementSibling.value = "";
+      }
+    };
+
+    function carregarPosts(filtro = null) {
+      onValue(ref(db, "posts"), (snapshot) => {
+        postsDiv.innerHTML = "";
+        const data = snapshot.val();
+        if (!data) return;
+        Object.entries(data).reverse().forEach(([id, post]) => {
+          if (!filtro || post.tema === filtro) {
+            if (!Array.isArray(post.comentarios)) post.comentarios = Object.values(post.comentarios || {});
+            postsDiv.appendChild(renderPost(id, post));
           }
         });
-      }
-    }
-
-    function filtrarPorTema(tema) {
-      get(postsRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const posts = snapshot.val();
-          const postsFiltrados = Object.values(posts).filter(post => post.tema === tema);
-          exibirPosts(postsFiltrados);
-        }
       });
     }
 
-    // Inicializando os posts
-    obterPosts();
+    window.filtrarPorTema = (tema) => {
+      carregarPosts(tema);
+    };
+
+    const temaSite = document.getElementById("temaSite");
+    const body = document.body;
+
+    if (localStorage.getItem("tema") === "escuro") {
+      body.classList.add("dark");
+      temaSite.value = "escuro";
+    }
+
+    temaSite.addEventListener("change", () => {
+      const modo = temaSite.value;
+      localStorage.setItem("tema", modo);
+      body.classList.toggle("dark", modo === "escuro");
+    });
+
+    window.abrirConfiguracoes = () => {
+      document.getElementById("modalConfig").style.display = "block";
+    };
+
+    window.fecharConfiguracoes = () => {
+      document.getElementById("modalConfig").style.display = "none";
+    };
+
+    carregarPosts();
   </script>
 </body>
-        </html>
+  </html>
