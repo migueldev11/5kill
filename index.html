@@ -239,7 +239,10 @@
 
     function salvarPost(post) {
       const newPostKey = push(postsRef).key;
-      set(ref(db, 'posts/' + newPostKey), post);
+      set(ref(db, 'posts/' + newPostKey), post).then(() => {
+        // Atualizar os posts na tela assim que salvar
+        exibirPosts([post]);  // Mostrar o post recém criado sem recarregar a página
+      });
     }
 
     document.getElementById("postForm").addEventListener("submit", function(e) {
@@ -267,12 +270,10 @@
       
       salvarPost(novoPost);
       e.target.reset();
-      obterPosts();
     });
 
     function exibirPosts(lista) {
       const area = document.getElementById("posts");
-      area.innerHTML = "";
       lista.forEach(post => {
         const div = document.createElement("div");
         div.className = "post";
@@ -303,7 +304,7 @@
             const post = snapshot.val();
             post.comentarios.push(comentarioText);
             update(postRef, { comentarios: post.comentarios });
-            obterPosts();
+            obterPosts(); // Recarregar os posts para exibir o novo comentário
           }
         });
       }
@@ -323,4 +324,4 @@
     obterPosts();
   </script>
 </body>
-                           </html>
+        </html>
