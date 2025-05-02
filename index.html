@@ -117,6 +117,7 @@
       <input type="text" id="nameInput" placeholder="Digite seu nome">
       <input type="password" id="passwordInput" placeholder="Digite sua senha">
       <button id="loginBtn">Entrar</button>
+      <p id="loginError" style="color:red; display:none;">Por favor, preencha os campos corretamente.</p>
     </div>
 
     <div id="forumPage" style="display:none;">
@@ -169,10 +170,12 @@
     const saveProfileBtn = document.getElementById('saveProfileBtn');
     const bioInput = document.getElementById('bioInput');
     const descriptionInput = document.getElementById('descriptionInput');
+    const loginError = document.getElementById('loginError');
     
     let userId = null;
 
-    loginBtn.addEventListener('click', () => {
+    // Função para verificar login
+    function login() {
       const name = document.getElementById('nameInput').value;
       const password = document.getElementById('passwordInput').value;
       
@@ -186,9 +189,16 @@
           document.getElementById('loginPage').style.display = 'none';
           document.getElementById('forumPage').style.display = 'block';
           loadPosts();
+        }).catch((error) => {
+          console.error("Erro ao criar o usuário:", error);
+          loginError.style.display = 'block';
         });
+      } else {
+        loginError.style.display = 'block';
       }
-    });
+    }
+
+    loginBtn.addEventListener('click', login);
 
     logoutBtn.addEventListener('click', () => {
       userId = null;
@@ -209,6 +219,8 @@
           loadPosts();
           postTitleInput.value = '';
           postContentInput.value = '';
+        }).catch((error) => {
+          console.error("Erro ao enviar post:", error);
         });
       }
     });
@@ -223,30 +235,11 @@
           description: description
         }).then(() => {
           alert('Perfil atualizado!');
+        }).catch((error) => {
+          console.error("Erro ao atualizar perfil:", error);
         });
       }
     });
 
     function loadPosts() {
-      get(ref(db, 'posts')).then((snapshot) => {
-        postsContainer.innerHTML = '';
-        if (snapshot.exists()) {
-          const posts = snapshot.val();
-          Object.keys(posts).forEach(postId => {
-            const post = posts[postId];
-            const postElement = document.createElement('div');
-            postElement.classList.add('post');
-            postElement.innerHTML = `
-              <div class="author">${post.userId}</div>
-              <h3>${post.title}</h3>
-              <p>${post.content}</p>
-            `;
-            postsContainer.appendChild(postElement);
-          });
-        }
-      });
-    }
-  </script>
-
-</body>
-  </html>
+      get(ref(db,
