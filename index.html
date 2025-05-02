@@ -1,245 +1,248 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4You - Fórum</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #333;
-      color: white;
-      margin: 0;
-      padding: 0;
-    }
-    .sidebar {
-      width: 200px;
-      height: 100vh;
-      background-color: #222;
-      padding-top: 20px;
-      position: fixed;
-    }
-    .sidebar a {
-      display: block;
-      padding: 10px;
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-      border-bottom: 1px solid #444;
-    }
-    .sidebar a:hover {
-      background-color: #444;
-    }
-    .content {
-      margin-left: 220px;
-      padding: 20px;
-    }
-    .header {
-      font-size: 32px;
-      text-align: center;
-      padding-bottom: 20px;
-    }
-    .post-box {
-      background-color: #444;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-    .post-box input, .post-box textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      background-color: #666;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 5px;
-    }
-    .post-box button {
-      background-color: #0e76a8;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .post-box button:hover {
-      background-color: #3b80b3;
-    }
-    .post {
-      background-color: #444;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-    }
-    .post .author {
-      font-weight: bold;
-    }
-    .profile {
-      background-color: #444;
-      padding: 20px;
-      border-radius: 5px;
-    }
-    .profile input, .profile textarea {
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-      background-color: #666;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 5px;
-    }
-    .profile button {
-      background-color: #0e76a8;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .profile button:hover {
-      background-color: #3b80b3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4You - Fórum</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #fff;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2d2d2d;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+        }
+        .sidebar h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: center;
+        }
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+        .main-content h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .main-content .posts {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .main-content .posts textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: #444;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .main-content .posts button {
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .main-content .posts button:hover {
+            background-color: #45a049;
+        }
+        .profile-container {
+            margin-bottom: 20px;
+        }
+        .profile-container input, .profile-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="sidebar">
-    <a href="#" id="homeBtn">Página Inicial</a>
-    <a href="#" id="profileBtn">Meu Perfil</a>
-    <a href="#" id="postsBtn">Ver Posts</a>
-    <a href="#" id="logoutBtn">Sair</a>
-  </div>
-
-  <div class="content">
-    <div id="loginPage">
-      <h2>FAÇA UMA CONTA PARA CONTINUAR</h2>
-      <p>Assim você poderá usar sem nenhuma preocupação 💯</p>
-      <input type="text" id="nameInput" placeholder="Digite seu nome">
-      <input type="password" id="passwordInput" placeholder="Digite sua senha">
-      <button id="loginBtn">Entrar</button>
-      <p id="loginError" style="color:red; display:none;">Por favor, preencha os campos corretamente.</p>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h1>4You</h1>
+        <ul>
+            <li><a href="#" id="btnHome">Página Principal</a></li>
+            <li><a href="#" id="btnProfile">Meu Perfil</a></li>
+            <li><a href="#" id="btnLogout">Sair</a></li>
+        </ul>
     </div>
 
-    <div id="forumPage" style="display:none;">
-      <div class="header">Bem-vindo ao 4You</div>
-      <div class="post-box">
-        <h3>Faça uma nova postagem</h3>
-        <input type="text" id="postTitle" placeholder="Título do Post">
-        <textarea id="postContent" placeholder="Escreva seu post aqui..."></textarea>
-        <button id="submitPost">Postar</button>
-      </div>
-      <div id="postsContainer"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div id="auth-section">
+            <h2>Faça login para continuar</h2>
+            <form id="login-form">
+                <input type="text" id="login-name" placeholder="Digite seu nome" required>
+                <input type="password" id="login-password" placeholder="Digite sua senha" required>
+                <button type="submit">Entrar</button>
+            </form>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile-section" style="display: none;">
+            <h2>Personalize seu perfil</h2>
+            <div class="profile-container">
+                <input type="text" id="profile-description" placeholder="Digite uma descrição para o seu perfil">
+                <button id="save-profile">Salvar Perfil</button>
+            </div>
+        </div>
+
+        <!-- Posts Section -->
+        <div id="posts-section" style="display: none;">
+            <h2>Postagens</h2>
+            <div class="posts">
+                <textarea id="post-text" placeholder="Escreva algo..."></textarea>
+                <button id="post-submit">Postar</button>
+            </div>
+            <div id="posts-container"></div>
+        </div>
     </div>
 
-    <div id="profilePage" style="display:none;">
-      <div class="header">Meu Perfil</div>
-      <div class="profile">
-        <input type="text" id="bioInput" placeholder="Escreva sua bio...">
-        <textarea id="descriptionInput" placeholder="Descrição do perfil..."></textarea>
-        <button id="saveProfileBtn">Salvar Perfil</button>
-      </div>
-    </div>
-  </div>
+    <!-- Firebase Config -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
-      authDomain: "you-97263.firebaseapp.com",
-      databaseURL: "https://you-97263-default-rtdb.firebaseio.com",
-      projectId: "you-97263",
-      storageBucket: "you-97263.firebasestorage.app",
-      messagingSenderId: "696591660594",
-      appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const postsContainer = document.getElementById('postsContainer');
-    const submitPostBtn = document.getElementById('submitPost');
-    const postTitleInput = document.getElementById('postTitle');
-    const postContentInput = document.getElementById('postContent');
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
-    const bioInput = document.getElementById('bioInput');
-    const descriptionInput = document.getElementById('descriptionInput');
-    const loginError = document.getElementById('loginError');
-    
-    let userId = null;
-
-    // Função para verificar login
-    function login() {
-      const name = document.getElementById('nameInput').value;
-      const password = document.getElementById('passwordInput').value;
-      
-      if (name && password) {
-        userId = name.toLowerCase().replace(/\s+/g, '_');
-        set(ref(db, 'users/' + userId), {
-          name: name,
-          bio: '',
-          description: ''
-        }).then(() => {
-          document.getElementById('loginPage').style.display = 'none';
-          document.getElementById('forumPage').style.display = 'block';
-          loadPosts();
-        }).catch((error) => {
-          console.error("Erro ao criar o usuário:", error);
-          loginError.style.display = 'block';
+        // Configuração Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
+            authDomain: "you-97263.firebaseapp.com",
+            databaseURL: "https://you-97263-default-rtdb.firebaseio.com",
+            projectId: "you-97263",
+            storageBucket: "you-97263.firebasestorage.app",
+            messagingSenderId: "696591660594",
+            appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
+        };
+        
+        // Inicializando o Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        // Função de login
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = document.getElementById('login-name').value;
+            const password = document.getElementById('login-password').value;
+            const userRef = ref(db, 'users/' + name);
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists() && snapshot.val().password === password) {
+                    // Usuário autenticado
+                    localStorage.setItem('user', name);
+                    loadProfile();
+                    showPosts();
+                } else {
+                    alert('Nome ou senha inválidos!');
+                }
+            });
         });
-      } else {
-        loginError.style.display = 'block';
-      }
-    }
 
-    loginBtn.addEventListener('click', login);
-
-    logoutBtn.addEventListener('click', () => {
-      userId = null;
-      document.getElementById('forumPage').style.display = 'none';
-      document.getElementById('loginPage').style.display = 'block';
-    });
-
-    submitPostBtn.addEventListener('click', () => {
-      const title = postTitleInput.value;
-      const content = postContentInput.value;
-      if (title && content) {
-        const postId = Date.now();
-        set(ref(db, 'posts/' + postId), {
-          title: title,
-          content: content,
-          userId: userId
-        }).then(() => {
-          loadPosts();
-          postTitleInput.value = '';
-          postContentInput.value = '';
-        }).catch((error) => {
-          console.error("Erro ao enviar post:", error);
+        // Salvar perfil
+        const saveProfileButton = document.getElementById('save-profile');
+        saveProfileButton.addEventListener('click', () => {
+            const description = document.getElementById('profile-description').value;
+            const userName = localStorage.getItem('user');
+            const profileRef = ref(db, 'users/' + userName);
+            set(profileRef, {
+                description: description
+            }).then(() => {
+                alert('Perfil atualizado!');
+                showPosts();
+            });
         });
-      }
-    });
 
-    saveProfileBtn.addEventListener('click', () => {
-      const bio = bioInput.value;
-      const description = descriptionInput.value;
-      if (userId) {
-        set(ref(db, 'users/' + userId), {
-          name: userId,
-          bio: bio,
-          description: description
-        }).then(() => {
-          alert('Perfil atualizado!');
-        }).catch((error) => {
-          console.error("Erro ao atualizar perfil:", error);
+        // Exibir postagens
+        const postsContainer = document.getElementById('posts-container');
+        const postSubmitButton = document.getElementById('post-submit');
+        const postTextArea = document.getElementById('post-text');
+
+        postSubmitButton.addEventListener('click', () => {
+            const text = postTextArea.value;
+            const postId = Date.now();
+            const userName = localStorage.getItem('user');
+            set(ref(db, 'posts/' + postId), {
+                text: text,
+                user: userName
+            }).then(() => {
+                loadPosts();
+            });
         });
-      }
-    });
 
-    function loadPosts() {
-      get(ref(db,
+        function loadPosts() {
+            const postsRef = ref(db, 'posts');
+            onValue(postsRef, (snapshot) => {
+                postsContainer.innerHTML = '';
+                if (snapshot.exists()) {
+                    const posts = snapshot.val();
+                    Object.keys(posts).forEach(postId => {
+                        const post = posts[postId];
+                        const postElement = document.createElement('div');
+                        postElement.classList.add('post');
+                        postElement.innerHTML = `
+                            <p><strong>${post.user}</strong>: ${post.text}</p>
+                        `;
+                        postsContainer.appendChild(postElement);
+                    });
+                }
+            });
+        }
+
+        // Exibir perfil
+        function loadProfile() {
+            const userName = localStorage.getItem('user');
+            const profileRef = ref(db, 'users/' + userName);
+            onValue(profileRef, (snapshot) => {
+                const user = snapshot.val();
+                document.getElementById('profile-description').value = user ? user.description : '';
+                document.getElementById('profile-section').style.display = 'block';
+                document.getElementById('posts-section').style.display = 'block';
+                document.getElementById('auth-section').style.display = 'none';
+            });
+        }
+
+        // Logout
+        const logoutButton = document.getElementById('btnLogout');
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('user');
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('profile-section').style.display = 'none';
+            document.getElementById('posts-section').style.display = 'none';
+        });
+
+        // Exibir posts ao carregar
+        if (localStorage.getItem('user')) {
+            loadProfile();
+            showPosts();
+        }
+    </script>
+</body>
+  </html>
