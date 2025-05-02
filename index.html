@@ -2,198 +2,217 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>HeyForum 2000</title>
+  <title>4You - Rede social Retro</title>
   <style>
     body {
+      font-family: sans-serif;
       margin: 0;
-      font-family: Tahoma, sans-serif;
-      background: url('https://www.transparenttextures.com/patterns/black-paper.png');
-      color: #eee;
+      display: flex;
+      background: #f4f4f4;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
     }
-    header {
-      background: #6600cc;
-      padding: 20px;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
+    body.dark {
+      background: #1e1e1e;
       color: white;
-      border-bottom: 5px double #00ffff;
     }
     .container {
-      display: flex;
+      width: 100%;
+      max-width: 600px;
+      background: white;
       padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .input-group button {
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .input-group button:hover {
+      background-color: #555;
+    }
+    .error {
+      color: red;
+      text-align: center;
+    }
+    .main-container {
+      display: none;
+    }
+    .form-container {
+      display: block;
+    }
+    .profile-container {
+      display: none;
+    }
+    #profileInfo {
+      margin-top: 20px;
+      text-align: center;
     }
     .sidebar {
-      width: 250px;
-      background: #111;
-      padding: 15px;
-      border: 2px dashed #ff00cc;
-    }
-    .sidebar h3 {
-      color: #00ffff;
-    }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-    .sidebar li {
-      cursor: pointer;
-      padding: 5px;
-      color: #fff;
-    }
-    .sidebar li:hover {
-      background: #333;
-    }
-    .main {
-      flex: 1;
-      padding: 15px;
-    }
-    #postForm {
-      margin-bottom: 30px;
-      background: #222;
-      padding: 15px;
-      border: 2px dotted #ff9900;
-    }
-    #postForm input, #postForm textarea {
-      width: 100%;
-      padding: 8px;
-      margin: 5px 0;
-      font-size: 14px;
-    }
-    #postForm button {
-      background: #00ccff;
-      color: black;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-    }
-    .post {
-      background: #191919;
-      border: 1px solid #666;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    .post h4 {
-      margin: 0 0 5px 0;
-      color: #ffcc00;
-    }
-    .comentario {
-      font-size: 12px;
-      color: #ccc;
-      margin-top: 5px;
-    }
-    .comentario textarea {
-      width: 100%;
-      padding: 5px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <header>HeyForum 2000</header>
-  <div class="container">
-    <aside class="sidebar">
+  <div id="form-container" class="container form-container">
+    <h1>FAÇA UMA CONTA PARA CONTINUAR</h1>
+    <p style="text-align: center;">Assim você poderá usar sem nenhuma preocupação 💯</p>
+    <div class="input-group">
+      <input type="text" id="username" placeholder="Nome de usuário" required>
+    </div>
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Senha" required>
+    </div>
+    <div class="input-group">
+      <button id="submitAccount">Criar Conta</button>
+    </div>
+    <p id="errorMessage" class="error"></p>
+  </div>
+
+  <div id="main-container" class="container main-container">
+    <h1>4You - Fórum Anônimo</h1>
+    <div class="input-group">
+      <button id="viewProfile">Ver meu perfil</button>
+    </div>
+
+    <div class="sidebar">
       <h3>Temas</h3>
-      <ul id="temas"></ul>
-    </aside>
-    <main class="main">
-      <form id="postForm">
-        <input type="text" id="titulo" placeholder="Título do post" required>
-        <input type="text" id="autor" placeholder="Seu nome ou anônimo" required>
-        <input type="text" id="tema" placeholder="Tema (ex: Jogos)" required>
-        <textarea id="conteudo" placeholder="Conteúdo do post" required></textarea>
-        <button type="submit">Postar</button>
-      </form>
-      <div id="posts"></div>
-    </main>
+      <select id="temaSelect" onchange="validateTemaSelection()">
+        <option value="Geral">Geral</option>
+        <option value="Tecnologia">Tecnologia</option>
+        <option value="Música">Música</option>
+        <option value="Jogos">Jogos</option>
+        <option value="Notícias">Notícias</option>
+        <option value="Aleatório">Aleatório</option>
+      </select>
+    </div>
+
+    <div class="content">
+      <h2>Posts</h2>
+      <div id="postsSection">
+        <div id="postForm">
+          <input type="text" id="postTitle" placeholder="Título do post">
+          <textarea id="postContent" placeholder="Conteúdo do post"></textarea>
+          <button id="submitPost">Postar</button>
+        </div>
+        <div id="posts"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="profile-container" class="container profile-container">
+    <h1>Perfil</h1>
+    <div id="profileInfo">
+      <p><strong>Nome de usuário:</strong> <span id="profileUsername"></span></p>
+      <p><strong>Foto de perfil:</strong> <img id="profilePicture" width="100" height="100"></p>
+      <p><strong>Descrição:</strong> <span id="profileDescription"></span></p>
+    </div>
+    <div class="input-group">
+      <button id="logout">Sair</button>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    
     const firebaseConfig = {
-      apiKey: "AIzaSyDoGZRT9rS4KCkSP6AV99GDs2gEfdoyAVU",
-      authDomain: "kill-ea075.firebaseapp.com",
-      databaseURL: "https://kill-ea075-default-rtdb.firebaseio.com",
-      projectId: "kill-ea075",
-      storageBucket: "kill-ea075.appspot.com",
-      messagingSenderId: "961864950723",
-      appId: "1:961864950723:web:f5f85735d0fe3eea001376"
+      apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
+      authDomain: "you-97263.firebaseapp.com",
+      projectId: "you-97263",
+      storageBucket: "you-97263.firebasestorage.app",
+      messagingSenderId: "696591660594",
+      appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
     };
-
+    
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const postsRef = ref(db, "posts");
-
-    const postForm = document.getElementById("postForm");
-    const postsDiv = document.getElementById("posts");
-    const temasSet = new Set();
-
-    postForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const titulo = document.getElementById("titulo").value;
-      const autor = document.getElementById("autor").value;
-      const tema = document.getElementById("tema").value;
-      const conteudo = document.getElementById("conteudo").value;
-
-      const post = {
-        titulo,
-        autor,
-        tema,
-        conteudo,
-        comentarios: []
-      };
-      push(postsRef, post);
-      postForm.reset();
-    });
-
-    onValue(postsRef, (snapshot) => {
-      postsDiv.innerHTML = "";
-      document.getElementById("temas").innerHTML = "";
-      const data = snapshot.val();
-      if (data) {
-        const posts = Object.entries(data).reverse();
-        posts.forEach(([key, post]) => {
-          const div = document.createElement("div");
-          div.className = "post";
-          div.innerHTML = `
-            <h4>${post.titulo}</h4>
-            <p><strong>${post.autor}</strong> - <em>${post.tema}</em></p>
-            <p>${post.conteudo}</p>
-            <div class="comentario">
-              <textarea placeholder="Comente aqui..."></textarea>
-              <button onclick="alert('Comentário salvo localmente! (Firebase comentários ainda não implementado)')">Comentar</button>
-            </div>
-          `;
-          postsDiv.appendChild(div);
-          temasSet.add(post.tema);
-        });
-
-        temasSet.forEach(t => {
-          const li = document.createElement("li");
-          li.textContent = t;
-          li.onclick = () => {
-            postsDiv.innerHTML = "";
-            posts.filter(([_, p]) => p.tema === t).forEach(([_, post]) => {
-              const div = document.createElement("div");
-              div.className = "post";
-              div.innerHTML = `
-                <h4>${post.titulo}</h4>
-                <p><strong>${post.autor}</strong> - <em>${post.tema}</em></p>
-                <p>${post.conteudo}</p>
-                <div class="comentario">
-                  <textarea placeholder="Comente aqui..."></textarea>
-                  <button onclick="alert('Comentário salvo localmente! (Firebase comentários ainda não implementado)')">Comentar</button>
-                </div>
-              `;
-              postsDiv.appendChild(div);
-            });
-          };
-          document.getElementById("temas").appendChild(li);
+    
+    const formContainer = document.getElementById('form-container');
+    const mainContainer = document.getElementById('main-container');
+    const profileContainer = document.getElementById('profile-container');
+    const profileUsername = document.getElementById('profileUsername');
+    const profilePicture = document.getElementById('profilePicture');
+    const profileDescription = document.getElementById('profileDescription');
+    const errorMessage = document.getElementById('errorMessage');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const submitAccountButton = document.getElementById('submitAccount');
+    const viewProfileButton = document.getElementById('viewProfile');
+    const logoutButton = document.getElementById('logout');
+    
+    submitAccountButton.addEventListener('click', function() {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+      
+      if (username && password) {
+        const userRef = ref(db, 'users/' + username);
+        set(userRef, {
+          username: username,
+          password: password,
+          profilePicture: "default.jpg",
+          profileDescription: "Sem descrição"
+        }).then(() => {
+          localStorage.setItem('username', username);
+          localStorage.setItem('password', password);
+          showMainContainer();
+        }).catch(error => {
+          errorMessage.textContent = "Erro ao criar conta: " + error.message;
         });
       }
     });
+
+    function showMainContainer() {
+      formContainer.style.display = 'none';
+      mainContainer.style.display = 'block';
+    }
+
+    function showProfileContainer() {
+      const username = localStorage.getItem('username');
+      const userRef = ref(db, 'users/' + username);
+      
+      get(userRef).then(snapshot => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          profileUsername.textContent = userData.username;
+          profilePicture.src = userData.profilePicture;
+          profileDescription.textContent = userData.profileDescription;
+        }
+      }).catch(error => {
+        errorMessage.textContent = "Erro ao carregar perfil: " + error.message;
+      });
+      profileContainer.style.display = 'block';
+      mainContainer.style.display = 'none';
+    }
+
+    viewProfileButton.addEventListener('click', showProfileContainer);
+
+    logoutButton.addEventListener('click', function() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('password');
+      formContainer.style.display = 'block';
+      profileContainer.style.display = 'none';
+    });
   </script>
 </body>
-</html>
+  </html>
