@@ -2,129 +2,115 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>4you - Fórum Anônimo</title>
+  <title>HeyForum 2000</title>
   <style>
     body {
-      font-family: 'Courier New', monospace;
-      background: #fdf6e3;
-      color: #000;
       margin: 0;
-      padding: 0;
+      font-family: Tahoma, sans-serif;
+      background: url('https://www.transparenttextures.com/patterns/black-paper.png');
+      color: #eee;
     }
     header {
-      background: #004466;
-      color: #fff;
-      padding: 15px;
+      background: #6600cc;
+      padding: 20px;
       text-align: center;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
-      border-bottom: 5px double #999;
-    }
-    .top-bar {
-      background: #ddd;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
-    }
-    .top-bar input {
-      padding: 5px;
-      font-size: 14px;
-      width: 200px;
+      color: white;
+      border-bottom: 5px double #00ffff;
     }
     .container {
       display: flex;
-      flex-wrap: wrap;
-      margin: 20px;
+      padding: 20px;
     }
     .sidebar {
-      width: 200px;
-      padding: 10px;
-      background: #e0e0e0;
-      margin-right: 20px;
-      border: 1px solid #999;
+      width: 250px;
+      background: #111;
+      padding: 15px;
+      border: 2px dashed #ff00cc;
     }
-    .content {
-      flex: 1;
+    .sidebar h3 {
+      color: #00ffff;
     }
-    .post-form input, .post-form textarea, .post-form select {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border: 1px solid #666;
-      background: #fff;
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
     }
-    .post-form button {
-      padding: 10px;
-      background: #004466;
+    .sidebar li {
+      cursor: pointer;
+      padding: 5px;
       color: #fff;
+    }
+    .sidebar li:hover {
+      background: #333;
+    }
+    .main {
+      flex: 1;
+      padding: 15px;
+    }
+    #postForm {
+      margin-bottom: 30px;
+      background: #222;
+      padding: 15px;
+      border: 2px dotted #ff9900;
+    }
+    #postForm input, #postForm textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    #postForm button {
+      background: #00ccff;
+      color: black;
+      padding: 10px;
       border: none;
       cursor: pointer;
     }
     .post {
-      background: #fff;
+      background: #191919;
       border: 1px solid #666;
-      padding: 10px;
       margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
     }
-    .post h3 {
-      margin: 0 0 10px;
+    .post h4 {
+      margin: 0 0 5px 0;
+      color: #ffcc00;
     }
-    .comment-box {
-      margin-top: 10px;
+    .comentario {
+      font-size: 12px;
+      color: #ccc;
+      margin-top: 5px;
     }
-    .comment-box textarea {
+    .comentario textarea {
       width: 100%;
-      padding: 5px;
-    }
-    .comment-box button {
-      margin-top: 5px;
-      background: #888;
-      color: #fff;
-      border: none;
-      padding: 5px;
-      cursor: pointer;
-    }
-    .comment {
-      background: #f0f0f0;
-      margin-top: 5px;
       padding: 5px;
     }
   </style>
 </head>
 <body>
-  <header>4you - Fórum Anônimo</header>
-  <div class="top-bar">
-    Nome de usuário: <input type="text" id="usernameInput" placeholder="Anônimo">
-  </div>
+  <header>HeyForum 2000</header>
   <div class="container">
-    <div class="sidebar">
-      <strong>Temas:</strong>
-      <ul>
-        <li><a href="#" onclick="filtrarTema('Geral')">Geral</a></li>
-        <li><a href="#" onclick="filtrarTema('Tecnologia')">Tecnologia</a></li>
-        <li><a href="#" onclick="filtrarTema('Memes')">Memes</a></li>
-        <li><a href="#" onclick="filtrarTema('Aleatório')">Aleatório</a></li>
-      </ul>
-    </div>
-    <div class="content">
-      <form class="post-form" id="postForm">
-        <input type="text" id="titulo" placeholder="Título" required>
-        <select id="tema">
-          <option value="Geral">Geral</option>
-          <option value="Tecnologia">Tecnologia</option>
-          <option value="Memes">Memes</option>
-          <option value="Aleatório">Aleatório</option>
-        </select>
-        <textarea id="mensagem" placeholder="Escreva sua mensagem..." required></textarea>
+    <aside class="sidebar">
+      <h3>Temas</h3>
+      <ul id="temas"></ul>
+    </aside>
+    <main class="main">
+      <form id="postForm">
+        <input type="text" id="titulo" placeholder="Título do post" required>
+        <input type="text" id="autor" placeholder="Seu nome ou anônimo" required>
+        <input type="text" id="tema" placeholder="Tema (ex: Jogos)" required>
+        <textarea id="conteudo" placeholder="Conteúdo do post" required></textarea>
         <button type="submit">Postar</button>
       </form>
       <div id="posts"></div>
-    </div>
+    </main>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoGZRT9rS4KCkSP6AV99GDs2gEfdoyAVU",
@@ -140,102 +126,74 @@
     const db = getDatabase(app);
     const postsRef = ref(db, "posts");
 
-    const usernameInput = document.getElementById("usernameInput");
-    const savedUser = localStorage.getItem("username");
-    if (savedUser) usernameInput.value = savedUser;
-    usernameInput.addEventListener("change", () => {
-      localStorage.setItem("username", usernameInput.value.trim() || "Anônimo");
-    });
+    const postForm = document.getElementById("postForm");
+    const postsDiv = document.getElementById("posts");
+    const temasSet = new Set();
 
-    document.getElementById("postForm").addEventListener("submit", e => {
+    postForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const titulo = document.getElementById("titulo").value;
+      const autor = document.getElementById("autor").value;
       const tema = document.getElementById("tema").value;
-      const mensagem = document.getElementById("mensagem").value;
-      const autor = usernameInput.value.trim() || "Anônimo";
+      const conteudo = document.getElementById("conteudo").value;
 
       const post = {
         titulo,
-        tema,
-        mensagem,
         autor,
-        comentarios: [],
-        timestamp: Date.now()
+        tema,
+        conteudo,
+        comentarios: []
       };
       push(postsRef, post);
-      e.target.reset();
+      postForm.reset();
     });
 
-    function renderizarPost(id, post) {
-      const div = document.createElement("div");
-      div.className = "post";
-      div.innerHTML = `
-        <h3>${post.titulo}</h3>
-        <p><strong>Tema:</strong> ${post.tema} | <strong>Autor:</strong> ${post.autor}</p>
-        <p>${post.mensagem}</p>
-        <div class="comentarios" id="comentarios-${id}">
-          ${post.comentarios?.map(c => `<div class="comment">${c}</div>`).join("") || ""}
-        </div>
-        <div class="comment-box">
-          <textarea placeholder="Comentar..." id="input-${id}"></textarea>
-          <button onclick="comentar('${id}')">Comentar</button>
-        </div>
-      `;
-      return div;
-    }
+    onValue(postsRef, (snapshot) => {
+      postsDiv.innerHTML = "";
+      document.getElementById("temas").innerHTML = "";
+      const data = snapshot.val();
+      if (data) {
+        const posts = Object.entries(data).reverse();
+        posts.forEach(([key, post]) => {
+          const div = document.createElement("div");
+          div.className = "post";
+          div.innerHTML = `
+            <h4>${post.titulo}</h4>
+            <p><strong>${post.autor}</strong> - <em>${post.tema}</em></p>
+            <p>${post.conteudo}</p>
+            <div class="comentario">
+              <textarea placeholder="Comente aqui..."></textarea>
+              <button onclick="alert('Comentário salvo localmente! (Firebase comentários ainda não implementado)')">Comentar</button>
+            </div>
+          `;
+          postsDiv.appendChild(div);
+          temasSet.add(post.tema);
+        });
 
-    window.comentar = function(id) {
-      const input = document.getElementById(`input-${id}`);
-      const texto = input.value.trim();
-      if (!texto) return;
-
-      const nome = localStorage.getItem("username") || "Anônimo";
-      const comentario = `${nome}: ${texto}`;
-
-      const comentariosRef = ref(db, `posts/${id}/comentarios`);
-      onValue(comentariosRef, snapshot => {
-        const comentarios = snapshot.val() || [];
-        comentarios.push(comentario);
-        set(comentariosRef, comentarios);
-      }, {
-        onlyOnce: true
-      });
-
-      input.value = "";
-    };
-
-    function carregarPosts() {
-      onValue(postsRef, snapshot => {
-        const area = document.getElementById("posts");
-        area.innerHTML = "";
-        const data = snapshot.val();
-        if (data) {
-          const keys = Object.keys(data).sort((a, b) => data[b].timestamp - data[a].timestamp);
-          keys.forEach(id => {
-            area.appendChild(renderizarPost(id, data[id]));
-          });
-        }
-      });
-    }
-
-    let temaAtual = null;
-    function filtrarTema(tema) {
-      temaAtual = tema;
-      onValue(postsRef, snapshot => {
-        const area = document.getElementById("posts");
-        area.innerHTML = "";
-        const data = snapshot.val();
-        if (data) {
-          const keys = Object.keys(data).filter(k => data[k].tema === temaAtual)
-            .sort((a, b) => data[b].timestamp - data[a].timestamp);
-          keys.forEach(id => {
-            area.appendChild(renderizarPost(id, data[id]));
-          });
-        }
-      });
-    }
-
-    carregarPosts();
+        temasSet.forEach(t => {
+          const li = document.createElement("li");
+          li.textContent = t;
+          li.onclick = () => {
+            postsDiv.innerHTML = "";
+            posts.filter(([_, p]) => p.tema === t).forEach(([_, post]) => {
+              const div = document.createElement("div");
+              div.className = "post";
+              div.innerHTML = `
+                <h4>${post.titulo}</h4>
+                <p><strong>${post.autor}</strong> - <em>${post.tema}</em></p>
+                <p>${post.conteudo}</p>
+                <div class="comentario">
+                  <textarea placeholder="Comente aqui..."></textarea>
+                  <button onclick="alert('Comentário salvo localmente! (Firebase comentários ainda não implementado)')">Comentar</button>
+                </div>
+              `;
+              postsDiv.appendChild(div);
+            });
+          };
+          document.getElementById("temas").appendChild(li);
+        });
+      }
+    });
   </script>
 </body>
 </html>
