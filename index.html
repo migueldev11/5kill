@@ -1,266 +1,252 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>4you</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4You - Fórum</title>
   <style>
     body {
+      font-family: 'Arial', sans-serif;
+      background-color: #333;
+      color: white;
       margin: 0;
-      font-family: "Courier New", monospace;
-      background: #f0f0f0;
-      color: #333;
+      padding: 0;
     }
-    .login, .main, .profile, .view-profile {
-      display: none;
-      padding: 20px;
-    }
-    .active { display: block; }
-    
-    /* Estilização retro */
     .sidebar {
-      width: 250px;
-      background: #333;
-      color: white;
+      width: 200px;
       height: 100vh;
+      background-color: #222;
+      padding-top: 20px;
       position: fixed;
-      padding: 20px;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.5);
     }
-    .sidebar h2 {
-      font-size: 2rem;
-      text-align: center;
-      color: #ff0;
-    }
-    .sidebar button {
-      background: none;
-      color: white;
-      border: none;
+    .sidebar a {
+      display: block;
       padding: 10px;
-      text-align: left;
-      font-size: 1.1rem;
-      margin: 10px 0;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.3s ease;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      border-bottom: 1px solid #444;
     }
-    .sidebar button:hover {
+    .sidebar a:hover {
       background-color: #444;
     }
-
     .content {
-      margin-left: 270px;
+      margin-left: 220px;
       padding: 20px;
     }
-
-    /* Estilização dos posts */
-    .post {
-      background: #fff;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
+    .header {
+      font-size: 32px;
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    .post-box {
+      background-color: #444;
       padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-
-    .post img {
-      max-width: 100px;
-      margin-top: 10px;
-    }
-
-    .textarea {
-      width: 100%;
-      padding: 10px;
-      font-family: "Courier New", monospace;
-      border: 1px solid #ccc;
       border-radius: 5px;
-      background: #f9f9f9;
-      margin-bottom: 10px;
-      box-sizing: border-box;
+      margin-bottom: 20px;
     }
-    
-    /* Formatação do login */
-    .login input {
+    .post-box input, .post-box textarea {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-
-    .login button {
-      background-color: #2f2f2f;
+      background-color: #666;
       color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+    .post-box button {
+      background-color: #0e76a8;
+      color: white;
+      padding: 10px;
       border: none;
-      padding: 10px 20px;
-      width: 100%;
       border-radius: 5px;
       cursor: pointer;
     }
-    .login button:hover {
+    .post-box button:hover {
+      background-color: #3b80b3;
+    }
+    .post {
       background-color: #444;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .post .author {
+      font-weight: bold;
+    }
+    .profile {
+      background-color: #444;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    .profile input, .profile textarea {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      background-color: #666;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+    .profile button {
+      background-color: #0e76a8;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .profile button:hover {
+      background-color: #3b80b3;
     }
   </style>
 </head>
 <body>
 
-<!-- Tela de login -->
-<div class="login active">
-  <h2>FAÇA UMA CONTA PARA CONTINUAR</h2>
-  <p>Assim você poderá usar sem nenhuma preocupação 💯</p>
-  <input id="username" placeholder="Nome de usuário" /><br/>
-  <input id="password" placeholder="Senha" type="password" /><br/>
-  <button onclick="register()">Entrar</button>
-</div>
-
-<!-- Página principal -->
-<div class="main">
   <div class="sidebar">
-    <h2>4you</h2>
-    <button onclick="showPage('feed')">Feed</button>
-    <button onclick="showPage('profile')">Perfil</button>
-    <button onclick="showPage('view-profile')">Ver Perfis</button>
+    <a href="#" id="homeBtn">Página Inicial</a>
+    <a href="#" id="profileBtn">Meu Perfil</a>
+    <a href="#" id="postsBtn">Ver Posts</a>
+    <a href="#" id="logoutBtn">Sair</a>
   </div>
 
   <div class="content">
-    <!-- Feed -->
-    <div id="feed" class="page active">
-      <h2>Postar</h2>
-      <select id="topic" class="textarea">
-        <option value="geral">Geral</option>
-        <option value="memes">Memes</option>
-        <option value="notícias">Notícias</option>
-      </select><br/>
-      <textarea id="message" class="textarea" placeholder="Escreva algo..."></textarea><br/>
-      <input type="text" id="imageUrl" class="textarea" placeholder="URL da imagem (opcional)" /><br/>
-      <button onclick="postMessage()">Postar</button>
-      <div id="posts"></div>
+    <div id="loginPage">
+      <h2>FAÇA UMA CONTA PARA CONTINUAR</h2>
+      <p>Assim você poderá usar sem nenhuma preocupação 💯</p>
+      <input type="text" id="nameInput" placeholder="Digite seu nome">
+      <input type="password" id="passwordInput" placeholder="Digite sua senha">
+      <button id="loginBtn">Entrar</button>
     </div>
 
-    <!-- Perfil -->
-    <div id="profile" class="page">
-      <h2>Editar Perfil</h2>
-      <input id="profilePic" class="textarea" placeholder="URL da imagem de perfil" /><br/>
-      <textarea id="bio" class="textarea" placeholder="Sua descrição"></textarea><br/>
-      <button onclick="saveProfile()">Salvar</button>
+    <div id="forumPage" style="display:none;">
+      <div class="header">Bem-vindo ao 4You</div>
+      <div class="post-box">
+        <h3>Faça uma nova postagem</h3>
+        <input type="text" id="postTitle" placeholder="Título do Post">
+        <textarea id="postContent" placeholder="Escreva seu post aqui..."></textarea>
+        <button id="submitPost">Postar</button>
+      </div>
+      <div id="postsContainer"></div>
     </div>
 
-    <!-- Ver Perfis -->
-    <div id="view-profile" class="page">
-      <h2>Perfis</h2>
-      <div id="users"></div>
+    <div id="profilePage" style="display:none;">
+      <div class="header">Meu Perfil</div>
+      <div class="profile">
+        <input type="text" id="bioInput" placeholder="Escreva sua bio...">
+        <textarea id="descriptionInput" placeholder="Descrição do perfil..."></textarea>
+        <button id="saveProfileBtn">Salvar Perfil</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
-    authDomain: "you-97263.firebaseapp.com",
-    databaseURL: "https://you-97263-default-rtdb.firebaseio.com",
-    projectId: "you-97263",
-    storageBucket: "you-97263.appspot.com",
-    messagingSenderId: "696591660594",
-    appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
-  };
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
+      authDomain: "you-97263.firebaseapp.com",
+      databaseURL: "https://you-97263-default-rtdb.firebaseio.com",
+      projectId: "you-97263",
+      storageBucket: "you-97263.firebasestorage.app",
+      messagingSenderId: "696591660594",
+      appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const usersRef = ref(db, "users/");
-  const postsRef = ref(db, "posts/");
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const postsContainer = document.getElementById('postsContainer');
+    const submitPostBtn = document.getElementById('submitPost');
+    const postTitleInput = document.getElementById('postTitle');
+    const postContentInput = document.getElementById('postContent');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const bioInput = document.getElementById('bioInput');
+    const descriptionInput = document.getElementById('descriptionInput');
+    
+    let userId = null;
 
-  let currentUser = null;
-
-  function register() {
-    const name = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
-    if (!name || !password) return alert("Preencha tudo");
-    currentUser = name;
-    set(ref(db, `users/${name}`), {
-      password,
-      bio: "",
-      profilePic: "",
-      createdAt: new Date().toISOString()
-    });
-    document.querySelector(".login").classList.remove("active");
-    document.querySelector(".main").classList.add("active"); // Show the main page after login
-    loadPosts();
-    loadProfiles();
-  }
-
-  function postMessage() {
-    const message = document.getElementById("message").value;
-    const topic = document.getElementById("topic").value;
-    const image = document.getElementById("imageUrl").value;
-    if (!message || !topic) return alert("Escreva algo e escolha um tema");
-    push(postsRef, {
-      user: currentUser,
-      message,
-      topic,
-      image,
-      time: new Date().toISOString()
-    });
-    document.getElementById("message").value = "";
-    document.getElementById("imageUrl").value = "";
-  }
-
-  function loadPosts() {
-    onValue(postsRef, snapshot => {
-      const container = document.getElementById("posts");
-      container.innerHTML = "";
-      const data = snapshot.val();
-      for (let id in data) {
-        const post = data[id];
-        const div = document.createElement("div");
-        div.className = "post";
-        div.innerHTML = `
-          <b>${post.user}</b> - <i>${post.topic}</i><br/>
-          ${post.message}<br/>
-          ${post.image ? `<img src="${post.image}" style="max-width:100px"/>` : ""}
-        `;
-        container.prepend(div);
+    loginBtn.addEventListener('click', () => {
+      const name = document.getElementById('nameInput').value;
+      const password = document.getElementById('passwordInput').value;
+      
+      if (name && password) {
+        userId = name.toLowerCase().replace(/\s+/g, '_');
+        set(ref(db, 'users/' + userId), {
+          name: name,
+          bio: '',
+          description: ''
+        }).then(() => {
+          document.getElementById('loginPage').style.display = 'none';
+          document.getElementById('forumPage').style.display = 'block';
+          loadPosts();
+        });
       }
     });
-  }
 
-  function saveProfile() {
-    const pic = document.getElementById("profilePic").value;
-    const bio = document.getElementById("bio").value;
-    set(ref(db, `users/${currentUser}`), {
-      password: "hidden",
-      bio,
-      profilePic: pic,
-      createdAt: new Date().toISOString()
+    logoutBtn.addEventListener('click', () => {
+      userId = null;
+      document.getElementById('forumPage').style.display = 'none';
+      document.getElementById('loginPage').style.display = 'block';
     });
-  }
 
-  function loadProfiles() {
-    onValue(usersRef, snapshot => {
-      const container = document.getElementById("users");
-      container.innerHTML = "";
-      const data = snapshot.val();
-      for (let user in data) {
-        const u = data[user];
-        const div = document.createElement("div");
-        div.className = "post";
-        div.innerHTML = `
-          <img src="${u.profilePic || ''}" style="width:50px;height:50px;border-radius:50%"/><br/>
-          <b>${user}</b><br/>
-          ${u.bio || ''}
-        `;
-        container.append(div);
+    submitPostBtn.addEventListener('click', () => {
+      const title = postTitleInput.value;
+      const content = postContentInput.value;
+      if (title && content) {
+        const postId = Date.now();
+        set(ref(db, 'posts/' + postId), {
+          title: title,
+          content: content,
+          userId: userId
+        }).then(() => {
+          loadPosts();
+          postTitleInput.value = '';
+          postContentInput.value = '';
+        });
       }
     });
-  }
 
-  function showPage(id) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-  }
-</script>
+    saveProfileBtn.addEventListener('click', () => {
+      const bio = bioInput.value;
+      const description = descriptionInput.value;
+      if (userId) {
+        set(ref(db, 'users/' + userId), {
+          name: userId,
+          bio: bio,
+          description: description
+        }).then(() => {
+          alert('Perfil atualizado!');
+        });
+      }
+    });
+
+    function loadPosts() {
+      get(ref(db, 'posts')).then((snapshot) => {
+        postsContainer.innerHTML = '';
+        if (snapshot.exists()) {
+          const posts = snapshot.val();
+          Object.keys(posts).forEach(postId => {
+            const post = posts[postId];
+            const postElement = document.createElement('div');
+            postElement.classList.add('post');
+            postElement.innerHTML = `
+              <div class="author">${post.userId}</div>
+              <h3>${post.title}</h3>
+              <p>${post.content}</p>
+            `;
+            postsContainer.appendChild(postElement);
+          });
+        }
+      });
+    }
+  </script>
 
 </body>
   </html>
