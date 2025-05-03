@@ -1,248 +1,187 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4You - Fórum</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            color: #fff;
-            display: flex;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #2d2d2d;
-            padding: 20px;
-            box-sizing: border-box;
-            position: fixed;
-        }
-        .sidebar h1 {
-            text-align: center;
-            font-size: 24px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin: 20px 0;
-            font-size: 18px;
-            text-align: center;
-        }
-        .sidebar ul li a {
-            color: #fff;
-            text-decoration: none;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            width: 100%;
-        }
-        .main-content h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        .main-content .posts {
-            background-color: #333;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .main-content .posts textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background-color: #444;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-        .main-content .posts button {
-            padding: 10px;
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .main-content .posts button:hover {
-            background-color: #45a049;
-        }
-        .profile-container {
-            margin-bottom: 20px;
-        }
-        .profile-container input, .profile-container button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>4you</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-color: #f4f4f4;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 180px;
+      background-color: #222;
+      color: #fff;
+      padding: 20px;
+      height: 100vh;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar button {
+      display: block;
+      margin: 8px 0;
+      padding: 8px;
+      width: 100%;
+      background: #444;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 20px;
+    }
+
+    .post {
+      background-color: white;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+
+    .like-btn {
+      background: #ccc;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    .post-form {
+      margin-bottom: 20px;
+    }
+
+    .post-form input, .post-form textarea, .post-form select {
+      display: block;
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 8px;
+    }
+  </style>
 </head>
 <body>
+  <div class="sidebar">
+    <h2>Temas</h2>
+    <button onclick="filterPosts('GERAL')">GERAL</button>
+    <button onclick="filterPosts('Memes')">Memes</button>
+    <button onclick="filterPosts('Notícias')">Notícias</button>
+    <button onclick="filterPosts('Aleatório')">Aleatório</button>
+  </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h1>4You</h1>
-        <ul>
-            <li><a href="#" id="btnHome">Página Principal</a></li>
-            <li><a href="#" id="btnProfile">Meu Perfil</a></li>
-            <li><a href="#" id="btnLogout">Sair</a></li>
-        </ul>
+  <div class="main">
+    <div class="post-form">
+      <input type="text" id="username" placeholder="Seu nome (opcional)">
+      <select id="topic">
+        <option value="GERAL">GERAL</option>
+        <option value="Memes">Memes</option>
+        <option value="Notícias">Notícias</option>
+        <option value="Aleatório">Aleatório</option>
+      </select>
+      <textarea id="message" placeholder="Escreva sua mensagem..."></textarea>
+      <button onclick="postMessage()">Postar</button>
     </div>
+    <div id="posts"></div>
+  </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div id="auth-section">
-            <h2>Faça login para continuar</h2>
-            <form id="login-form">
-                <input type="text" id="login-name" placeholder="Digite seu nome" required>
-                <input type="password" id="login-password" placeholder="Digite sua senha" required>
-                <button type="submit">Entrar</button>
-            </form>
-        </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        <!-- Profile Section -->
-        <div id="profile-section" style="display: none;">
-            <h2>Personalize seu perfil</h2>
-            <div class="profile-container">
-                <input type="text" id="profile-description" placeholder="Digite uma descrição para o seu perfil">
-                <button id="save-profile">Salvar Perfil</button>
-            </div>
-        </div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
+      authDomain: "you-97263.firebaseapp.com",
+      databaseURL: "https://you-97263-default-rtdb.firebaseio.com",
+      projectId: "you-97263",
+      storageBucket: "you-97263.firebasestorage.app",
+      messagingSenderId: "696591660594",
+      appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
+    };
 
-        <!-- Posts Section -->
-        <div id="posts-section" style="display: none;">
-            <h2>Postagens</h2>
-            <div class="posts">
-                <textarea id="post-text" placeholder="Escreva algo..."></textarea>
-                <button id="post-submit">Postar</button>
-            </div>
-            <div id="posts-container"></div>
-        </div>
-    </div>
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const postsRef = ref(db, 'posts');
 
-    <!-- Firebase Config -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    // Função para postar
+    window.postMessage = () => {
+      const username = document.getElementById('username').value.trim();
+      const topic = document.getElementById('topic').value;
+      const message = document.getElementById('message').value.trim();
 
-        // Configuração Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
-            authDomain: "you-97263.firebaseapp.com",
-            databaseURL: "https://you-97263-default-rtdb.firebaseio.com",
-            projectId: "you-97263",
-            storageBucket: "you-97263.firebasestorage.app",
-            messagingSenderId: "696591660594",
-            appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
-        };
-        
-        // Inicializando o Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        
-        // Função de login
-        const loginForm = document.getElementById('login-form');
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const name = document.getElementById('login-name').value;
-            const password = document.getElementById('login-password').value;
-            const userRef = ref(db, 'users/' + name);
-            onValue(userRef, (snapshot) => {
-                if (snapshot.exists() && snapshot.val().password === password) {
-                    // Usuário autenticado
-                    localStorage.setItem('user', name);
-                    loadProfile();
-                    showPosts();
-                    document.getElementById('auth-section').style.display = 'none';
-                    document.getElementById('profile-section').style.display = 'block';
-                    document.getElementById('posts-section').style.display = 'block';
-                } else {
-                    alert('Nome ou senha inválidos!');
-                }
-            });
+      if (!message) return;
+
+      const anonName = username || `Anônimo_${Math.floor(Math.random() * 1000)}`;
+      const newPost = {
+        name: anonName,
+        topic,
+        message,
+        likes: 0,
+        timestamp: Date.now()
+      };
+
+      push(postsRef, newPost);
+      document.getElementById('message').value = "";
+    };
+
+    // Exibir posts
+    onValue(postsRef, (snapshot) => {
+      const postsDiv = document.getElementById('posts');
+      postsDiv.innerHTML = "";
+      const data = snapshot.val();
+      if (!data) return;
+
+      const filtered = Object.entries(data).filter(([_, val]) => currentTopic === "ALL" || val.topic === currentTopic);
+      filtered.reverse().forEach(([key, post]) => {
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+          <strong>${post.name}</strong> - <em>${post.topic}</em><br>
+          ${post.message}<br>
+          <button class="like-btn" onclick="likePost('${key}', ${post.likes || 0})">Curtir (${post.likes || 0})</button>
+        `;
+        postsDiv.appendChild(div);
+      });
+    });
+
+    // Curtir
+    window.likePost = (key, currentLikes) => {
+      set(ref(db, `posts/${key}/likes`), currentLikes + 1);
+    };
+
+    // Filtro por tema
+    let currentTopic = "GERAL";
+    window.filterPosts = (topic) => {
+      currentTopic = topic;
+      onValue(postsRef, (snapshot) => {
+        const postsDiv = document.getElementById('posts');
+        postsDiv.innerHTML = "";
+        const data = snapshot.val();
+        if (!data) return;
+
+        const filtered = Object.entries(data).filter(([_, val]) => topic === "ALL" || val.topic === topic);
+        filtered.reverse().forEach(([key, post]) => {
+          const div = document.createElement("div");
+          div.className = "post";
+          div.innerHTML = `
+            <strong>${post.name}</strong> - <em>${post.topic}</em><br>
+            ${post.message}<br>
+            <button class="like-btn" onclick="likePost('${key}', ${post.likes || 0})">Curtir (${post.likes || 0})</button>
+          `;
+          postsDiv.appendChild(div);
         });
+      });
+    };
 
-        // Salvar perfil
-        const saveProfileButton = document.getElementById('save-profile');
-        saveProfileButton.addEventListener('click', () => {
-            const description = document.getElementById('profile-description').value;
-            const userName = localStorage.getItem('user');
-            const profileRef = ref(db, 'users/' + userName);
-            set(profileRef, {
-                description: description
-            }).then(() => {
-                alert('Perfil atualizado!');
-                showPosts();
-            });
-        });
-
-        // Exibir postagens
-        const postsContainer = document.getElementById('posts-container');
-        const postSubmitButton = document.getElementById('post-submit');
-        const postTextArea = document.getElementById('post-text');
-
-        postSubmitButton.addEventListener('click', () => {
-            const text = postTextArea.value;
-            const postId = Date.now();
-            const userName = localStorage.getItem('user');
-            set(ref(db, 'posts/' + postId), {
-                text: text,
-                user: userName
-            }).then(() => {
-                loadPosts();
-            });
-        });
-
-        function loadPosts() {
-            const postsRef = ref(db, 'posts');
-            onValue(postsRef, (snapshot) => {
-                postsContainer.innerHTML = '';
-                if (snapshot.exists()) {
-                    const posts = snapshot.val();
-                    Object.keys(posts).forEach(postId => {
-                        const post = posts[postId];
-                        const postElement = document.createElement('div');
-                        postElement.classList.add('post');
-                        postElement.innerHTML = `
-                            <p><strong>${post.user}</strong>: ${post.text}</p>
-                        `;
-                        postsContainer.appendChild(postElement);
-                    });
-                }
-            });
-        }
-
-        // Exibir perfil
-        function loadProfile() {
-            const userName = localStorage.getItem('user');
-            const profileRef = ref(db, 'users/' + userName);
-            onValue(profileRef, (snapshot) => {
-                const user = snapshot.val();
-                document.getElementById('profile-description').value = user ? user.description : '';
-            });
-        }
-
-        // Logout
-        const logoutButton = document.getElementById('btnLogout');
-        logoutButton.addEventListener('click', () => {
-            localStorage.removeItem('user');
-            document.getElementById('auth-section').style.display = 'block';
-            document.getElementById('profile-section').style.display = 'none';
-            document.getElementById('posts-section').style.display = 'none';
-        });
-
-        // Exibir posts ao carregar
-        if (localStorage.getItem('user')) {
-            loadProfile();
-            showPosts();
-        }
-    </script>
+    // Apagar tudo a cada 10 minutos
+    setInterval(() => {
+      remove(postsRef);
+    }, 10 * 60 * 1000); // 10 minutos
+  </script>
 </body>
-    </html>
+</html>
