@@ -160,6 +160,9 @@
                     localStorage.setItem('user', name);
                     loadProfile();
                     showPosts();
+                    document.getElementById('auth-section').style.display = 'none';
+                    document.getElementById('profile-section').style.display = 'block';
+                    document.getElementById('posts-section').style.display = 'block';
                 } else {
                     alert('Nome ou senha inválidos!');
                 }
@@ -223,9 +226,6 @@
             onValue(profileRef, (snapshot) => {
                 const user = snapshot.val();
                 document.getElementById('profile-description').value = user ? user.description : '';
-                document.getElementById('profile-section').style.display = 'block';
-                document.getElementById('posts-section').style.display = 'block';
-                document.getElementById('auth-section').style.display = 'none';
             });
         }
 
@@ -245,4 +245,4 @@
         }
     </script>
 </body>
-  </html>
+    </html>
