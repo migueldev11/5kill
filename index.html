@@ -4,44 +4,49 @@
   <meta charset="UTF-8" />
   <title>4you</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Courier New', monospace;
-      background: linear-gradient(to bottom, #e0e0e0, #ffffff);
+      background: linear-gradient(to bottom, #e7e7e7, #cfcfcf);
+      color: #222;
       display: flex;
-      color: #333;
     }
 
     .sidebar {
       width: 160px;
-      background: #111;
+      background-color: #111;
       color: white;
       padding: 20px;
       height: 100vh;
       overflow-y: auto;
+      border-right: 2px solid #888;
     }
 
     .sidebar h2 {
       font-size: 16px;
       margin-bottom: 10px;
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid #777;
       padding-bottom: 5px;
     }
 
     .sidebar button {
       display: block;
-      margin: 6px 0;
+      margin: 5px 0;
       padding: 6px;
       width: 100%;
-      background: #222;
+      background: #333;
       color: white;
       border: none;
-      cursor: pointer;
       text-align: left;
+      cursor: pointer;
     }
 
     .sidebar button:hover {
-      background: #444;
+      background: #555;
     }
 
     .main {
@@ -50,69 +55,57 @@
       overflow-y: auto;
     }
 
-    .post-form {
-      margin-bottom: 20px;
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 12px;
-    }
-
-    .post-form input, .post-form textarea, .post-form select {
+    .post-form input,
+    .post-form textarea,
+    .post-form select {
       width: 100%;
-      margin-bottom: 10px;
       padding: 8px;
-      font-family: monospace;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .post-form textarea {
-      resize: vertical;
-      max-length: 200;
+      margin-bottom: 10px;
+      border: 1px solid #888;
+      background-color: #f9f9f9;
+      font-family: inherit;
     }
 
     .post-form button {
-      background: #333;
-      color: white;
       padding: 8px 12px;
+      background: #222;
+      color: white;
       border: none;
       cursor: pointer;
     }
 
     .post {
-      background: #fff;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
+      background-color: white;
+      border: 1px solid #aaa;
+      border-radius: 5px;
       padding: 10px;
-      word-wrap: break-word;
+      margin-bottom: 12px;
+      box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
     }
 
     .like-btn, .comment-btn {
-      background: #eee;
+      background: #ccc;
       border: none;
-      padding: 4px 8px;
-      cursor: pointer;
       margin-top: 5px;
       margin-right: 5px;
-    }
-
-    .comments {
-      margin-top: 10px;
-      padding-left: 10px;
-      border-left: 2px solid #ccc;
+      padding: 5px 8px;
+      cursor: pointer;
     }
 
     .comment-input {
-      margin-top: 5px;
+      width: 100%;
+      margin-top: 8px;
+      padding: 6px;
     }
 
-    .comment-input input {
-      width: calc(100% - 70px);
-      display: inline-block;
+    .comments {
+      margin-top: 8px;
+      padding-left: 10px;
+      font-size: 14px;
     }
 
-    .comment-input button {
-      display: inline-block;
+    .comments p {
+      margin: 4px 0;
     }
   </style>
 </head>
@@ -122,14 +115,14 @@
     <button onclick="filterPosts('GERAL')">GERAL</button>
     <button onclick="filterPosts('Memes')">Memes</button>
     <button onclick="filterPosts('Notícias')">Notícias</button>
-    <button onclick="filterPosts('Aleatório')">Aleatório</button>
+    <button onclick="filterPosts('Tecnologia')">Tecnologia</button>
     <button onclick="filterPosts('Jogos')">Jogos</button>
     <button onclick="filterPosts('Filmes')">Filmes</button>
     <button onclick="filterPosts('Música')">Música</button>
-    <button onclick="filterPosts('Escola')">Escola</button>
-    <button onclick="filterPosts('Anime')">Anime</button>
-    <button onclick="filterPosts('Internet')">Internet</button>
-    <button onclick="filterPosts('Ajuda')">Ajuda</button>
+    <button onclick="filterPosts('Arte')">Arte</button>
+    <button onclick="filterPosts('Esportes')">Esportes</button>
+    <button onclick="filterPosts('Aleatório')">Aleatório</button>
+    <button onclick="filterPosts('Programação')">Programação</button>
   </div>
 
   <div class="main">
@@ -139,16 +132,16 @@
         <option value="GERAL">GERAL</option>
         <option value="Memes">Memes</option>
         <option value="Notícias">Notícias</option>
-        <option value="Aleatório">Aleatório</option>
+        <option value="Tecnologia">Tecnologia</option>
         <option value="Jogos">Jogos</option>
         <option value="Filmes">Filmes</option>
         <option value="Música">Música</option>
-        <option value="Escola">Escola</option>
-        <option value="Anime">Anime</option>
-        <option value="Internet">Internet</option>
-        <option value="Ajuda">Ajuda</option>
+        <option value="Arte">Arte</option>
+        <option value="Esportes">Esportes</option>
+        <option value="Aleatório">Aleatório</option>
+        <option value="Programação">Programação</option>
       </select>
-      <textarea id="message" maxlength="200" placeholder="Escreva sua mensagem... (máx 200 caracteres)"></textarea>
+      <textarea id="message" placeholder="Escreva sua mensagem..." maxlength="200"></textarea>
       <button onclick="postMessage()">Postar</button>
     </div>
     <div id="posts"></div>
@@ -156,7 +149,15 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      onValue,
+      set,
+      remove,
+      update
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
@@ -171,13 +172,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const postsRef = ref(db, 'posts');
-    let userLikes = new Set();
+
+    let currentTopic = "GERAL";
+    const likedPosts = new Set();
 
     window.postMessage = () => {
       const username = document.getElementById('username').value.trim();
       const topic = document.getElementById('topic').value;
-      const message = document.getElementById('message').value.trim();
-
+      const message = document.getElementById('message').value.trim().slice(0, 200);
       if (!message) return;
 
       const anonName = username || `Anônimo_${Math.floor(Math.random() * 1000)}`;
@@ -186,7 +188,7 @@
         topic,
         message,
         likes: 0,
-        comments: {},
+        comments: [],
         timestamp: Date.now()
       };
 
@@ -194,85 +196,79 @@
       document.getElementById('message').value = "";
     };
 
-    function renderPosts(data, topic) {
+    function renderPosts(data) {
       const postsDiv = document.getElementById('posts');
       postsDiv.innerHTML = "";
-      const filtered = Object.entries(data).filter(([_, val]) => topic === "ALL" || val.topic === topic);
+      if (!data) return;
+
+      const filtered = Object.entries(data).filter(([_, val]) => currentTopic === "ALL" || val.topic === currentTopic);
       filtered.reverse().forEach(([key, post]) => {
         const div = document.createElement("div");
         div.className = "post";
 
-        let commentsHTML = '';
+        let commentsHtml = "";
         if (post.comments) {
-          for (const [_, comment] of Object.entries(post.comments)) {
-            commentsHTML += `<div><strong>${comment.name}</strong> comentou: ${comment.text}</div>`;
-          }
+          commentsHtml = Object.values(post.comments).map(c => {
+            return `<p><strong>${c.name}</strong> comentou: ${c.text}</p>`;
+          }).join("");
         }
 
         div.innerHTML = `
           <strong>${post.name}</strong> - <em>${post.topic}</em><br>
-          ${post.message}<br>
-          <button class="like-btn" onclick="likePost('${key}')">Curtir (${post.likes || 0})</button>
-          <button class="comment-btn" onclick="toggleCommentInput('${key}')">Comentar</button>
-          <div id="comment-input-${key}" class="comment-input" style="display:none;">
-            <input type="text" id="comment-${key}" placeholder="Seu comentário...">
+          <div style="white-space: pre-wrap;">${post.message}</div>
+          <button class="like-btn" onclick="likePost('${key}', ${post.likes || 0})">Curtir (${post.likes || 0})</button>
+          <button class="comment-btn" onclick="toggleComment('${key}')">Comentar</button>
+          <div id="comment-box-${key}" style="display:none;">
+            <input class="comment-input" id="comment-input-${key}" maxlength="150" placeholder="Escreva um comentário...">
             <button onclick="submitComment('${key}')">Enviar</button>
           </div>
-          <div class="comments">${commentsHTML}</div>
+          <div class="comments">${commentsHtml}</div>
         `;
         postsDiv.appendChild(div);
       });
     }
 
-    onValue(postsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-      renderPosts(data, currentTopic);
-    });
-
-    window.likePost = (key) => {
-      if (userLikes.has(key)) return;
-      userLikes.add(key);
-      const likeRef = ref(db, `posts/${key}/likes`);
-      set(likeRef, (val) => (val || 0) + 1);
-      onValue(postsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) renderPosts(data, currentTopic);
-      }, { onlyOnce: true });
+    window.likePost = (key, currentLikes) => {
+      if (likedPosts.has(key)) return;
+      likedPosts.add(key);
+      set(ref(db, `posts/${key}/likes`), currentLikes + 1);
     };
 
-    window.toggleCommentInput = (key) => {
-      const inputBox = document.getElementById(`comment-input-${key}`);
-      inputBox.style.display = inputBox.style.display === 'none' ? 'block' : 'none';
+    window.toggleComment = (key) => {
+      const box = document.getElementById(`comment-box-${key}`);
+      box.style.display = box.style.display === "none" ? "block" : "none";
     };
 
     window.submitComment = (key) => {
-      const input = document.getElementById(`comment-${key}`);
-      const text = input.value.trim();
+      const input = document.getElementById(`comment-input-${key}`);
+      const text = input.value.trim().slice(0, 150);
       if (!text) return;
-      const username = document.getElementById('username').value.trim() || `Anônimo_${Math.floor(Math.random() * 1000)}`;
-      const comment = {
-        name: username,
-        text
-      };
-      const commentsRef = ref(db, `posts/${key}/comments`);
-      push(commentsRef, comment);
+
+      const nameInput = document.getElementById("username").value.trim();
+      const commentName = nameInput || `Anônimo_${Math.floor(Math.random() * 1000)}`;
+
+      const comment = { name: commentName, text };
+      const postRef = ref(db, `posts/${key}/comments`);
+      const newCommentKey = push(postRef).key;
+
+      update(ref(db, `posts/${key}/comments/${newCommentKey}`), comment);
       input.value = "";
     };
 
-    let currentTopic = "GERAL";
+    onValue(postsRef, (snapshot) => {
+      renderPosts(snapshot.val());
+    });
+
     window.filterPosts = (topic) => {
       currentTopic = topic;
       onValue(postsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) renderPosts(data, topic);
-      }, { onlyOnce: true });
+        renderPosts(snapshot.val());
+      });
     };
 
-    // Apagar tudo a cada 10 minutos
     setInterval(() => {
       remove(postsRef);
     }, 10 * 60 * 1000);
   </script>
 </body>
-</html>
+  </html>
