@@ -1,130 +1,189 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>4you</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
-      font-family: 'Courier New', monospace;
-      background: linear-gradient(to bottom, #e7e7e7, #cfcfcf);
-      color: #222;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #0d1b2a;
+      color: #f4f4f4;
       display: flex;
+      height: 100vh;
+      flex-direction: row;
+      overflow-x: hidden;
     }
 
+    /* Barra lateral */
     .sidebar {
-      width: 160px;
-      background-color: #111;
+      width: 250px;
+      background: linear-gradient(45deg, #ff6b6b, #ff9e3d);
       color: white;
       padding: 20px;
-      height: 100vh;
-      overflow-y: auto;
-      border-right: 2px solid #888;
+      height: 100%;
+      box-shadow: 4px 4px 20px rgba(0,0,0,0.3);
     }
 
     .sidebar h2 {
-      font-size: 16px;
-      margin-bottom: 10px;
-      border-bottom: 1px solid #777;
-      padding-bottom: 5px;
+      font-size: 22px;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 20px;
     }
 
     .sidebar button {
       display: block;
-      margin: 5px 0;
-      padding: 6px;
+      margin: 12px 0;
+      padding: 12px;
       width: 100%;
-      background: #333;
+      background: #ff1e3d;
       color: white;
-      border: none;
-      text-align: left;
+      font-size: 16px;
+      border: 2px solid #ff9e3d;
+      border-radius: 8px;
       cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
     }
 
     .sidebar button:hover {
-      background: #555;
+      background: #ff9e3d;
+      color: #222;
+      transform: translateY(-2px);
     }
 
     .main {
       flex-grow: 1;
-      padding: 20px;
+      padding: 40px 20px;
       overflow-y: auto;
+      background-color: #1d2b36;
     }
 
-    .post-form input,
-    .post-form textarea,
-    .post-form select {
+    .post-form {
+      margin-bottom: 30px;
+      background-color: #222;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .post-form input, .post-form select, .post-form textarea {
+      display: block;
       width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #888;
-      background-color: #f9f9f9;
-      font-family: inherit;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #333;
+      color: white;
+      border: 2px solid #444;
+      border-radius: 8px;
+      font-size: 16px;
     }
 
-    .post-form button {
-      padding: 8px 12px;
-      background: #222;
-      color: white;
-      border: none;
-      cursor: pointer;
+    .post-form textarea {
+      min-height: 120px;
+      max-height: 300px;
+      resize: vertical;
     }
 
     .post {
-      background-color: white;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 12px;
-      box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+      background-color: #2a3b4c;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      color: white;
+      word-wrap: break-word; /* Quebra de linha */
     }
 
-    .like-btn, .comment-btn {
-      background: #ccc;
-      border: none;
-      margin-top: 5px;
-      margin-right: 5px;
-      padding: 5px 8px;
-      cursor: pointer;
+    .post strong {
+      font-size: 18px;
+      color: #ff9e3d;
     }
 
-    .comment-input {
-      width: 100%;
-      margin-top: 8px;
-      padding: 6px;
-    }
-
-    .comments {
-      margin-top: 8px;
-      padding-left: 10px;
+    .post em {
+      font-style: normal;
       font-size: 14px;
+      color: #9e9e9e;
     }
 
-    .comments p {
-      margin: 4px 0;
+    .like-btn {
+      background: #444;
+      color: white;
+      border: 2px solid #ff9e3d;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
+
+    .like-btn:hover {
+      background: #ff9e3d;
+      color: #222;
+      transform: translateY(-2px);
+    }
+
+    .comment-section {
+      margin-top: 20px;
+    }
+
+    .comment-box {
+      background: #333;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comment-box input,
+    .comment-box textarea {
+      padding: 8px;
+      margin-bottom: 8px;
+      background: #444;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      width: 100%;
+    }
+
+    .comment-btn {
+      background: #ff9e3d;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .comment-btn:hover {
+      background: #ff6b6b;
+      color: #222;
+    }
+
   </style>
 </head>
 <body>
+
+  <!-- Sidebar -->
   <div class="sidebar">
     <h2>Temas</h2>
     <button onclick="filterPosts('GERAL')">GERAL</button>
     <button onclick="filterPosts('Memes')">Memes</button>
     <button onclick="filterPosts('Notícias')">Notícias</button>
-    <button onclick="filterPosts('Tecnologia')">Tecnologia</button>
-    <button onclick="filterPosts('Jogos')">Jogos</button>
-    <button onclick="filterPosts('Filmes')">Filmes</button>
-    <button onclick="filterPosts('Música')">Música</button>
-    <button onclick="filterPosts('Arte')">Arte</button>
-    <button onclick="filterPosts('Esportes')">Esportes</button>
     <button onclick="filterPosts('Aleatório')">Aleatório</button>
-    <button onclick="filterPosts('Programação')">Programação</button>
+    <button onclick="filterPosts('Tecnologia')">Tecnologia</button>
+    <button onclick="filterPosts('Games')">Games</button>
+    <button onclick="filterPosts('Esportes')">Esportes</button>
+    <button onclick="filterPosts('Arte')">Arte</button>
+    <button onclick="filterPosts('Música')">Música</button>
+    <button onclick="filterPosts('Cinema')">Cinema</button>
   </div>
 
+  <!-- Main Content -->
   <div class="main">
     <div class="post-form">
       <input type="text" id="username" placeholder="Seu nome (opcional)">
@@ -132,39 +191,31 @@
         <option value="GERAL">GERAL</option>
         <option value="Memes">Memes</option>
         <option value="Notícias">Notícias</option>
-        <option value="Tecnologia">Tecnologia</option>
-        <option value="Jogos">Jogos</option>
-        <option value="Filmes">Filmes</option>
-        <option value="Música">Música</option>
-        <option value="Arte">Arte</option>
-        <option value="Esportes">Esportes</option>
         <option value="Aleatório">Aleatório</option>
-        <option value="Programação">Programação</option>
+        <option value="Tecnologia">Tecnologia</option>
+        <option value="Games">Games</option>
+        <option value="Esportes">Esportes</option>
+        <option value="Arte">Arte</option>
+        <option value="Música">Música</option>
+        <option value="Cinema">Cinema</option>
       </select>
       <textarea id="message" placeholder="Escreva sua mensagem..." maxlength="200"></textarea>
       <button onclick="postMessage()">Postar</button>
     </div>
+
     <div id="posts"></div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      push,
-      onValue,
-      set,
-      remove,
-      update
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDg_VOK4zs9K6RVze8h_pVFr2zLEv8ZjkA",
       authDomain: "you-97263.firebaseapp.com",
       databaseURL: "https://you-97263-default-rtdb.firebaseio.com",
       projectId: "you-97263",
-      storageBucket: "you-97263.appspot.com",
+      storageBucket: "you-97263.firebasestorage.app",
       messagingSenderId: "696591660594",
       appId: "1:696591660594:web:fc22fe138bd743ab9eae2b"
     };
@@ -173,13 +224,12 @@
     const db = getDatabase(app);
     const postsRef = ref(db, 'posts');
 
-    let currentTopic = "GERAL";
-    const likedPosts = new Set();
-
+    // Função para postar
     window.postMessage = () => {
       const username = document.getElementById('username').value.trim();
       const topic = document.getElementById('topic').value;
-      const message = document.getElementById('message').value.trim().slice(0, 200);
+      const message = document.getElementById('message').value.trim();
+
       if (!message) return;
 
       const anonName = username || `Anônimo_${Math.floor(Math.random() * 1000)}`;
@@ -188,7 +238,6 @@
         topic,
         message,
         likes: 0,
-        comments: [],
         timestamp: Date.now()
       };
 
@@ -196,79 +245,47 @@
       document.getElementById('message').value = "";
     };
 
-    function renderPosts(data) {
+    // Exibir posts
+    onValue(postsRef, (snapshot) => {
       const postsDiv = document.getElementById('posts');
       postsDiv.innerHTML = "";
+      const data = snapshot.val();
       if (!data) return;
 
-      const filtered = Object.entries(data).filter(([_, val]) => currentTopic === "ALL" || val.topic === currentTopic);
-      filtered.reverse().forEach(([key, post]) => {
+      Object.entries(data).forEach(([key, post]) => {
         const div = document.createElement("div");
         div.className = "post";
-
-        let commentsHtml = "";
-        if (post.comments) {
-          commentsHtml = Object.values(post.comments).map(c => {
-            return `<p><strong>${c.name}</strong> comentou: ${c.text}</p>`;
-          }).join("");
-        }
-
         div.innerHTML = `
           <strong>${post.name}</strong> - <em>${post.topic}</em><br>
-          <div style="white-space: pre-wrap;">${post.message}</div>
+          ${post.message}<br>
           <button class="like-btn" onclick="likePost('${key}', ${post.likes || 0})">Curtir (${post.likes || 0})</button>
-          <button class="comment-btn" onclick="toggleComment('${key}')">Comentar</button>
-          <div id="comment-box-${key}" style="display:none;">
-            <input class="comment-input" id="comment-input-${key}" maxlength="150" placeholder="Escreva um comentário...">
-            <button onclick="submitComment('${key}')">Enviar</button>
+          <div class="comment-section">
+            <!-- Comentários aqui -->
           </div>
-          <div class="comments">${commentsHtml}</div>
         `;
         postsDiv.appendChild(div);
       });
-    }
-
-    window.likePost = (key, currentLikes) => {
-      if (likedPosts.has(key)) return;
-      likedPosts.add(key);
-      set(ref(db, `posts/${key}/likes`), currentLikes + 1);
-    };
-
-    window.toggleComment = (key) => {
-      const box = document.getElementById(`comment-box-${key}`);
-      box.style.display = box.style.display === "none" ? "block" : "none";
-    };
-
-    window.submitComment = (key) => {
-      const input = document.getElementById(`comment-input-${key}`);
-      const text = input.value.trim().slice(0, 150);
-      if (!text) return;
-
-      const nameInput = document.getElementById("username").value.trim();
-      const commentName = nameInput || `Anônimo_${Math.floor(Math.random() * 1000)}`;
-
-      const comment = { name: commentName, text };
-      const postRef = ref(db, `posts/${key}/comments`);
-      const newCommentKey = push(postRef).key;
-
-      update(ref(db, `posts/${key}/comments/${newCommentKey}`), comment);
-      input.value = "";
-    };
-
-    onValue(postsRef, (snapshot) => {
-      renderPosts(snapshot.val());
     });
 
-    window.filterPosts = (topic) => {
-      currentTopic = topic;
-      onValue(postsRef, (snapshot) => {
-        renderPosts(snapshot.val());
-      });
-    };
+    // Função de curtir
+    function likePost(postKey, currentLikes) {
+      const postRef = ref(db, `posts/${postKey}`);
+      set(postRef, { likes: currentLikes + 1 });
+    }
 
-    setInterval(() => {
-      remove(postsRef);
-    }, 10 * 60 * 1000);
+    // Função de filtrar posts por tema
+    window.filterPosts = (topic) => {
+      const postsDiv = document.getElementById('posts');
+      const posts = postsDiv.children;
+      for (let i = 0; i < posts.length; i++) {
+        if (!posts[i].innerText.includes(topic)) {
+          posts[i].style.display = 'none';
+        } else {
+          posts[i].style.display = 'block';
+        }
+      }
+    };
   </script>
+
 </body>
-  </html>
+          </html>
